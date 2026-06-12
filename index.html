@@ -341,7 +341,6 @@ body::before{
             <span class="filter-tab" data-status="revisar">⚠ Revisar</span>
           </div>
           <div style="display:flex;gap:6px;margin-top:6px">
-            <button class="btn-sm btn-cyan" id="btn-export-csv">📥 Exportar CSV</button>
             <button class="btn-sm" style="background:rgba(245,158,11,0.2);color:var(--neon-gold);border:1px solid rgba(245,158,11,0.3)" id="btn-export-json">📦 Exportar JSON</button>
           </div>
         </div>
@@ -843,22 +842,7 @@ const APP = {
     },dur/20)
   },
 
-  exportCSV(){
-    if(!this.consultas.length){ this.toast('No hay datos','err'); return }
-    const h = 'ID;Fecha;Categoría;Confianza;Estado;Consulta;Respuesta\n'
-    const rows = this.consultas.map(c=>{
-      const f=new Date(c.timestamp).toLocaleDateString('es-ES')
-      const ct=this.categorias.find(x=>x.id===c.categoria)
-      return `${c.id};${f};${ct?ct.label:c.categoria};${c.confianza}%;${c.estado};"${c.texto.replace(/"/g,'""')}";"${c.respuestaFinal.replace(/"/g,'""')}"`
-    }).join('\n')
-    const blob = new Blob(['\uFEFF'+h+rows],{type:'text/csv;charset=utf-8;'})
-    const a = document.createElement('a')
-    a.href = URL.createObjectURL(blob)
-    a.download = 'consultas-express.csv'
-    a.click()
-    URL.revokeObjectURL(a.href)
-    this.toast('📥 CSV exportado','ok')
-  },
+
 
   setupListeners(){
     document.querySelectorAll('.nav-link').forEach(l=>{
@@ -902,9 +886,7 @@ const APP = {
         this.renderHistorial()
       })
     })
-    document.getElementById('btn-export-csv').addEventListener('click',()=>this.exportCSV())
     document.getElementById('file-import').addEventListener('change',e=>{if(e.target.files[0]){this.importJSON(e.target.files[0]);e.target.value=''}})
-    document.getElementById('btn-export-csv').addEventListener('click',()=>this.exportCSV())
     document.getElementById('btn-export-json').addEventListener('click',()=>this.exportJSON())
     document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal')) this.cerrarModal()})
     document.addEventListener('keydown',e=>{if(e.key==='Escape') this.cerrarModal()})
