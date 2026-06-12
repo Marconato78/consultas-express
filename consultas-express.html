@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Consultas Express — Asistente IA</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Plus+Jakarta+Sans:wght@400;500;700;800&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════════
+   CONSULTAS EXPRESS  ·  Synthwave / Retro-futuristic
+   ═══════════════════════════════════════════════════ */
+
+/* ─── RESET ─── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth}
+body{font-family:'Plus Jakarta Sans',sans-serif;background:#0a0015;color:#f0e6ff;min-height:100vh;display:flex;justify-content:center;overflow-x:hidden}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0a0015}
+::-webkit-scrollbar-thumb{background:#ff2a75;border-radius:3px}
+
+/* ─── SYNTHWAVE TOKENS ─── */
+:root{
+  --bg-deep:#0a0015;
+  --bg-surface:#120026;
+  --bg-elevated:#1c0040;
+  --bg-glass:rgba(28,0,64,0.7);
+  --text-primary:#f0e6ff;
+  --text-secondary:#9080b0;
+  --neon-pink:#ff2a75;
+  --neon-cyan:#00e5ff;
+  --neon-purple:#a855f7;
+  --neon-gold:#f59e0b;
+  --neon-red:#ff0044;
+  --neon-green:#00ff88;
+  --glow-pink:0 0 20px rgba(255,42,117,0.4);
+  --glow-cyan:0 0 20px rgba(0,229,255,0.4);
+  --glow-purple:0 0 20px rgba(168,85,247,0.4);
+  --glow-gold:0 0 20px rgba(245,158,11,0.4);
+}
+
+/* ─── GRID BACKGROUND ─── */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    repeating-linear-gradient(0deg, rgba(255,42,117,0.04) 0px, transparent 1px, transparent 40px),
+    repeating-linear-gradient(90deg, rgba(255,42,117,0.03) 0px, transparent 1px, transparent 40px);
+  pointer-events:none;z-index:0
+}
+.sun-grid{
+  position:fixed;top:0;left:50%;transform:translateX(-50%);width:800px;height:400px;
+  background:radial-gradient(ellipse at 50% 100%, rgba(255,42,117,0.08) 0%, transparent 60%),
+             repeating-linear-gradient(0deg, transparent 0px, transparent 38px, rgba(255,42,117,0.06) 38px, rgba(255,42,117,0.06) 40px);
+  pointer-events:none;z-index:0
+}
+
+/* ─── CANVAS ─── */
+.canvas-wrap{width:900px;max-width:100%;min-height:100vh;position:relative;z-index:1;display:flex;flex-direction:column}
+
+/* ─── GLASS UTILITY ─── */
+.glass{background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,42,117,0.15)}
+
+/* ─── NEON TEXT ─── */
+.neon-pink{text-shadow:0 0 10px var(--neon-pink),0 0 30px var(--neon-pink)}
+.neon-cyan{text-shadow:0 0 10px var(--neon-cyan),0 0 30px var(--neon-cyan)}
+.neon-purple{text-shadow:0 0 10px var(--neon-purple),0 0 30px var(--neon-purple)}
+
+/* ─── MASTHEAD ─── */
+.masthead{display:flex;align-items:center;justify-content:space-between;height:48px;padding:0 16px;border-bottom:1px solid rgba(255,42,117,0.2);margin-top:8px}
+.logo{font-family:'Orbitron',sans-serif;font-weight:900;font-size:20px;letter-spacing:2px;color:var(--neon-pink);text-shadow:0 0 10px var(--neon-pink),0 0 30px var(--neon-pink)}
+.masthead-badge{font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;color:var(--neon-cyan);text-shadow:0 0 8px var(--neon-cyan);padding:4px 12px;border:1px solid rgba(0,229,255,0.3);border-radius:4px}
+
+/* ─── NAV ─── */
+.nav-bar{display:flex;align-items:center;gap:0;height:40px;padding:0 8px;border-bottom:1px solid rgba(255,42,117,0.12)}
+.nav-link{font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);padding:0 18px;cursor:pointer;height:100%;display:flex;align-items:center;border-bottom:2px solid transparent;transition:all .2s;gap:6px}
+.nav-link:hover{color:var(--text-primary)}
+.nav-link.active{color:var(--neon-pink);border-bottom-color:var(--neon-pink);text-shadow:0 0 8px var(--neon-pink)}
+
+/* ─── SUBNAV ─── */
+.subnav{display:flex;align-items:center;gap:0;height:32px;padding:0 12px;font-size:11px;color:var(--text-secondary);border-bottom:1px solid rgba(168,85,247,0.12)}
+.subnav-item{padding:0 12px;border-right:1px solid rgba(168,85,247,0.15);font-weight:500;letter-spacing:.3px}
+.subnav-item:last-child{border-right:none}
+.subnav-item strong{font-weight:800;color:var(--neon-cyan);text-shadow:0 0 6px var(--neon-cyan)}
+
+/* ─── MAIN LAYOUT ─── */
+.main-body{display:flex;flex:1;gap:0}
+
+/* ─── CONTENT COL ─── */
+.content-col{flex:1;padding:12px;display:flex;flex-direction:column;gap:10px;min-width:0}
+
+/* ─── HERO ─── */
+.hero{position:relative;overflow:hidden;border-radius:12px;padding:24px 28px;border:1px solid rgba(255,42,117,0.2);margin-bottom:2px}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg, rgba(255,42,117,0.08), rgba(0,229,255,0.04));border-radius:12px;pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg, transparent, var(--neon-pink), var(--neon-cyan), transparent)}
+.hero-display{font-family:'Orbitron',sans-serif;font-weight:900;font-size:28px;letter-spacing:3px;color:var(--neon-pink);text-shadow:0 0 15px var(--neon-pink),0 0 40px var(--neon-pink),0 0 80px rgba(255,42,117,0.3);position:relative;z-index:1}
+.hero-tagline{font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;font-size:14px;color:var(--text-secondary);margin-top:4px;position:relative;z-index:1;letter-spacing:.5px}
+
+/* ─── GLASS PANEL ─── */
+.glass-panel{background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,42,117,0.12);border-radius:10px;padding:12px}
+.glass-panel.dark{background:rgba(10,0,21,0.6)}
+.glass-panel.cyan{border-color:rgba(0,229,255,0.15)}
+.glass-panel.purple{border-color:rgba(168,85,247,0.15)}
+
+/* ─── SECTION LABEL ─── */
+.section-label{font-family:'Orbitron',sans-serif;font-weight:700;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-secondary);padding:4px 0 8px;display:flex;align-items:center;gap:8px}
+.section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg, rgba(168,85,247,0.3), transparent)}
+
+/* ─── FORM ─── */
+.form-panel textarea{width:100%;background:rgba(10,0,21,0.6);border:1px solid rgba(0,229,255,0.2);border-radius:6px;padding:10px 12px;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;color:var(--text-primary);resize:vertical;min-height:56px;outline:none;transition:border-color .2s,box-shadow .2s}
+.form-panel textarea::placeholder{color:rgba(144,128,176,0.5)}
+.form-panel textarea:focus{border-color:var(--neon-cyan);box-shadow:0 0 15px rgba(0,229,255,0.15)}
+.form-actions{display:flex;gap:10px;margin-top:8px;align-items:center}
+.btn-primary{font-family:'Orbitron',sans-serif;font-weight:700;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;background:linear-gradient(135deg, var(--neon-pink), #cc0055);color:var(--text-primary);border:none;border-radius:6px;padding:10px 24px;cursor:pointer;transition:all .2s;border:1px solid rgba(255,42,117,0.3)}
+.btn-primary:hover{box-shadow:0 0 25px rgba(255,42,117,0.5),0 0 50px rgba(255,42,117,0.2);transform:translateY(-1px)}
+.btn-primary:disabled{opacity:.4;cursor:default;transform:none;box-shadow:none}
+.btn-ghost{font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:11px;color:var(--text-secondary);background:transparent;border:1px solid rgba(144,128,176,0.2);border-radius:6px;padding:8px 16px;cursor:pointer;transition:all .2s}
+.btn-ghost:hover{color:var(--text-primary);border-color:rgba(144,128,176,0.4)}
+.btn-sm{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:10px;letter-spacing:.5px;border:none;border-radius:5px;padding:6px 14px;cursor:pointer;transition:all .2s}
+.btn-pink{background:linear-gradient(135deg,var(--neon-pink),#cc0055);color:var(--text-primary)}
+.btn-pink:hover{box-shadow:0 0 15px rgba(255,42,117,0.4)}
+.btn-cyan{background:linear-gradient(135deg,var(--neon-cyan),#0099cc);color:#0a0015}
+.btn-cyan:hover{box-shadow:0 0 15px rgba(0,229,255,0.4)}
+.btn-gold{background:linear-gradient(135deg,var(--neon-gold),#cc7a00);color:#0a0015}
+.btn-gold:hover{box-shadow:0 0 15px rgba(245,158,11,0.4)}
+.btn-ghost-sm{font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:10px;color:var(--text-secondary);background:transparent;border:1px solid rgba(144,128,176,0.15);border-radius:5px;padding:5px 12px;cursor:pointer;transition:all .2s}
+.btn-ghost-sm:hover{color:var(--text-primary);border-color:rgba(144,128,176,0.3)}
+
+/* ─── RESULT CARD ─── */
+.result-card{display:none;border-radius:10px;padding:14px;margin-top:4px;background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(0,229,255,0.15)}
+.result-card.visible{display:block}
+.result-badge{display:inline-flex;align-items:center;gap:4px;font-family:'Orbitron',sans-serif;font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:4px;color:#0a0015}
+.result-badge.precio{background:var(--neon-gold)}
+.result-badge.horario{background:var(--neon-cyan)}
+.result-badge.envio{background:var(--neon-purple);color:var(--text-primary)}
+.result-badge.devolucion{color:var(--text-primary)}
+.result-badge.producto{background:var(--neon-pink)}
+.result-badge.factura{background:var(--neon-gold)}
+.result-badge.otro{background:var(--text-secondary)}
+.result-confianza{font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;font-size:11px;color:var(--text-secondary);margin-left:8px}
+.result-respuesta{margin-top:8px}
+.result-respuesta textarea{width:100%;background:rgba(10,0,21,0.5);border:1px solid rgba(168,85,247,0.2);border-radius:6px;padding:8px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text-primary);resize:vertical;min-height:50px;outline:none}
+.result-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+
+/* ─── HISTORIAL ─── */
+.historial-glass{background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,42,117,0.1);border-radius:10px;padding:10px}
+.historial-empty{padding:30px;text-align:center;color:var(--text-secondary);font-size:13px}
+
+/* ─── SEARCH ─── */
+.search-wrap{display:flex;margin:0 0 8px}
+.search-input{flex:1;background:rgba(10,0,21,0.6);border:1px solid rgba(0,229,255,0.2);border-radius:6px 0 0 6px;padding:0 12px;height:34px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text-primary);outline:none;transition:border-color .2s}
+.search-input:focus{border-color:var(--neon-cyan)}
+.search-go{font-family:'Orbitron',sans-serif;font-weight:700;font-size:10px;letter-spacing:1px;text-transform:uppercase;background:linear-gradient(135deg,var(--neon-cyan),#0099cc);color:#0a0015;border:none;border-radius:0 6px 6px 0;padding:0 16px;cursor:pointer}
+.filter-tabs{display:flex;gap:0;margin-bottom:8px;border-bottom:1px solid rgba(168,85,247,0.12)}
+.filter-tab{font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:11px;padding:6px 14px;cursor:pointer;color:var(--text-secondary);border-bottom:2px solid transparent;transition:all .2s}
+.filter-tab:hover{color:var(--text-primary)}
+.filter-tab.active{color:var(--neon-pink);border-bottom-color:var(--neon-pink)}
+
+/* ─── CONSULTA CARD ─── */
+.consulta-card{background:rgba(18,0,38,0.5);border-left:3px solid var(--neon-pink);border-radius:0 8px 8px 0;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:all .2s;border:1px solid rgba(255,42,117,0.06);border-left-width:3px}
+.consulta-card:hover{background:rgba(28,0,64,0.5);border-color:rgba(255,42,117,0.2);border-left-width:3px}
+.consulta-card.cat-precio{border-left-color:var(--neon-gold)}
+.consulta-card.cat-precio:hover{box-shadow:0 0 12px rgba(245,158,11,0.1)}
+.consulta-card.cat-horario{border-left-color:var(--neon-cyan)}
+.consulta-card.cat-horario:hover{box-shadow:0 0 12px rgba(0,229,255,0.1)}
+.consulta-card.cat-envio{border-left-color:var(--neon-purple)}
+.consulta-card.cat-envio:hover{box-shadow:0 0 12px rgba(168,85,247,0.1)}
+.consulta-card.cat-devolucion{border-left-color:var(--neon-red)}
+.consulta-card.cat-devolucion:hover{box-shadow:0 0 12px rgba(255,0,68,0.1)}
+.consulta-card.cat-producto{border-left-color:var(--neon-pink)}
+.consulta-card.cat-producto:hover{box-shadow:0 0 12px rgba(255,42,117,0.1)}
+.consulta-card.cat-factura{border-left-color:var(--neon-gold)}
+.consulta-card.cat-factura:hover{box-shadow:0 0 12px rgba(245,158,11,0.1)}
+.consulta-card.cat-otro{border-left-color:var(--text-secondary)}
+.consulta-card.cat-otro:hover{box-shadow:0 0 12px rgba(144,128,176,0.1)}
+.card-badge{font-family:'Orbitron',sans-serif;font-weight:700;font-size:9px;letter-spacing:.8px;text-transform:uppercase;padding:2px 8px;border-radius:3px;white-space:nowrap;flex-shrink:0}
+.card-badge.precio{background:rgba(245,158,11,0.2);color:var(--neon-gold)}
+.card-badge.horario{background:rgba(0,229,255,0.15);color:var(--neon-cyan)}
+.card-badge.envio{background:rgba(168,85,247,0.2);color:var(--neon-purple)}
+.card-badge.devolucion{background:rgba(255,0,68,0.2);color:var(--neon-red)}
+.card-badge.producto{background:rgba(255,42,117,0.2);color:var(--neon-pink)}
+.card-badge.factura{background:rgba(245,158,11,0.2);color:var(--neon-gold)}
+.card-badge.otro{background:rgba(144,128,176,0.2);color:var(--text-secondary)}
+.card-text{font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;font-size:12px;color:var(--text-primary);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-meta{font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:var(--text-secondary);white-space:nowrap}
+.card-status{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:9px;padding:2px 8px;border-radius:3px;white-space:nowrap}
+.card-status.respondida{background:rgba(0,255,136,0.15);color:var(--neon-green)}
+.card-status.pendiente{background:rgba(245,158,11,0.15);color:var(--neon-gold)}
+.card-status.revisar{background:rgba(255,0,68,0.15);color:var(--neon-red)}
+.card-arrow{color:var(--neon-cyan);font-size:12px;flex-shrink:0;opacity:.6}
+
+/* ─── RIGHT RAIL ─── */
+.right-rail{width:240px;padding:10px;display:flex;flex-direction:column;gap:8px;border-left:1px solid rgba(255,42,117,0.08);flex-shrink:0}
+
+.rail-stat{background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,42,117,0.1);border-radius:10px;padding:12px;text-align:center}
+.rail-stat-num{font-family:'Orbitron',sans-serif;font-weight:900;font-size:22px;color:var(--neon-pink);text-shadow:0 0 10px var(--neon-pink);line-height:1}
+.rail-stat-label{font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;font-size:10px;color:var(--text-secondary);margin-top:2px;letter-spacing:.5px;text-transform:uppercase}
+
+.rail-box{background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,0.12);border-radius:10px;padding:12px}
+.rail-box hd{display:inline-block;font-family:'Orbitron',sans-serif;font-weight:700;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--neon-cyan);text-shadow:0 0 6px var(--neon-cyan);margin-bottom:6px}
+.rail-box p{font-family:'Plus Jakarta Sans',sans-serif;font-size:11px;color:var(--text-secondary);line-height:1.5}
+
+/* ─── POLL BARS ─── */
+.poll-item{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.poll-label{font-family:'Orbitron',sans-serif;font-weight:700;font-size:9px;letter-spacing:.5px;text-transform:uppercase;width:70px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;color:var(--text-secondary)}
+.poll-bar-wrap{flex:1;height:8px;background:rgba(10,0,21,0.6);border-radius:4px;overflow:hidden}
+.poll-bar-fill{height:100%;border-radius:4px;transition:width .5s ease}
+.poll-count{font-family:'Orbitron',sans-serif;font-weight:700;font-size:9px;width:22px;text-align:right;color:var(--text-secondary)}
+
+/* ─── STATS VIEW ─── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stats-card{background:var(--bg-glass);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,42,117,0.1);border-radius:10px;padding:14px;text-align:center}
+.stats-card-num{font-family:'Orbitron',sans-serif;font-weight:900;font-size:26px;color:var(--neon-cyan);text-shadow:0 0 8px var(--neon-cyan);line-height:1}
+.stats-card-label{font-family:'Plus Jakarta Sans',sans-serif;font-weight:500;font-size:10px;color:var(--text-secondary);margin-top:2px;text-transform:uppercase;letter-spacing:.5px}
+
+.daily-chart{display:flex;gap:4px;align-items:flex-end;height:60px;padding:4px 0}
+.daily-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%;justify-content:flex-end}
+.daily-fill{width:100%;max-width:28px;border-radius:4px 4px 0 0;min-height:0;transition:height .5s ease}
+.daily-label{font-family:'Plus Jakarta Sans',sans-serif;font-size:9px;color:var(--text-secondary)}
+.daily-count{font-family:'Orbitron',sans-serif;font-weight:700;font-size:9px;color:var(--text-primary)}
+
+/* ─── DOTTED DIVIDER ─── */
+.dotted{border-bottom:1px solid rgba(168,85,247,0.15);margin:6px 0}
+
+/* ─── MODAL ─── */
+.modal-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(10,0,21,0.8);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);z-index:100;align-items:center;justify-content:center}
+.modal-overlay.visible{display:flex}
+.modal-box{background:var(--bg-elevated);border-radius:12px;width:520px;max-width:92%;padding:20px;border:1px solid rgba(255,42,117,0.2);max-height:80vh;overflow-y:auto}
+.modal-title{font-family:'Orbitron',sans-serif;font-weight:700;font-size:13px;letter-spacing:1px;text-transform:uppercase;color:var(--neon-pink);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center}
+.modal-close{background:rgba(255,0,68,0.2);color:var(--neon-red);border:1px solid rgba(255,0,68,0.3);border-radius:4px;width:24px;height:24px;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s}
+.modal-close:hover{background:rgba(255,0,68,0.3)}
+.modal-field{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text-primary);margin-bottom:6px}
+.modal-field strong{font-weight:700;color:var(--neon-cyan);display:inline-block;width:80px}
+.modal-textarea{width:100%;background:rgba(10,0,21,0.5);border:1px solid rgba(168,85,247,0.2);border-radius:6px;padding:8px 10px;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;color:var(--text-primary);resize:vertical;min-height:50px;outline:none;margin-top:4px}
+
+/* ─── FOOTER ─── */
+.footer-bar{padding:14px;text-align:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:10px;color:var(--text-secondary);border-top:1px solid rgba(255,42,117,0.08);margin-top:auto}
+.footer-bar .neon-tag{display:inline-block;font-family:'Orbitron',sans-serif;font-weight:700;font-size:9px;letter-spacing:1px;padding:1px 8px;border-radius:3px;background:rgba(255,42,117,0.15);color:var(--neon-pink);text-shadow:0 0 6px var(--neon-pink);margin:0 4px}
+.footer-bar a{color:var(--neon-cyan);transition:color .2s}
+.footer-bar a:hover{color:var(--neon-pink)}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--bg-elevated);color:var(--text-primary);font-family:'Plus Jakarta Sans',sans-serif;font-weight:600;font-size:12px;padding:10px 20px;border-radius:8px;z-index:200;display:none;border:1px solid rgba(255,42,117,0.2);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.toast.visible{display:block;animation:fadeUp .3s ease both}
+.toast.ok{border-color:rgba(0,255,136,0.3);box-shadow:0 0 20px rgba(0,255,136,0.1)}
+.toast.err{border-color:rgba(255,0,68,0.3);box-shadow:0 0 20px rgba(255,0,68,0.1)}
+
+/* ─── ANIMATIONS ─── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.fade-up{animation:fadeUp .3s ease both}
+
+/* ─── RESPONSIVE ─── */
+@media(max-width:920px){
+  .canvas-wrap{width:100%}
+  .right-rail{display:none}
+  .sun-grid{display:none}
+}
+@media(max-width:600px){
+  .nav-link{font-size:9px;padding:0 10px}
+  .hero-display{font-size:20px}
+  .content-col{padding:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="sun-grid"></div>
+
+<div class="canvas-wrap" id="app">
+
+  <!-- ─── MASTHEAD ─── -->
+  <div class="masthead">
+    <span class="logo">⚡ CONSULTAS</span>
+    <span class="masthead-badge" id="masthead-badge">HOY: 0</span>
+  </div>
+
+  <!-- ─── NAV ─── -->
+  <div class="nav-bar">
+    <span class="nav-link active" data-view="nueva">✏️ Nueva</span>
+    <span class="nav-link" data-view="historial">📋 Historial</span>
+    <span class="nav-link" data-view="stats">📊 Stats</span>
+  </div>
+
+  <!-- ─── SUBNAV ─── -->
+  <div class="subnav">
+    <span class="subnav-item">📅 Hoy: <strong id="sn-hoy">0</strong></span>
+    <span class="subnav-item">📆 Semana: <strong id="sn-semana">0</strong></span>
+    <span class="subnav-item">⏱ Ahorro: <strong id="sn-ahorro">0min</strong></span>
+    <span class="subnav-item">🎯 Precisión: <strong id="sn-precision">0%</strong></span>
+  </div>
+
+  <!-- ─── MAIN ─── -->
+  <div class="main-body">
+
+    <!-- ─── CONTENT ─── -->
+    <div class="content-col" id="content-col">
+
+      <!-- VIEW: Nueva -->
+      <div id="view-nueva" class="view">
+        <div class="hero glass">
+          <div class="hero-display">CONSULTAS EXPRESS</div>
+          <div class="hero-tagline">Clasificación automática por palabras clave · Synthwave 2.0</div>
+        </div>
+        <div class="glass-panel form-panel">
+          <div class="section-label">✏️ Nueva consulta</div>
+          <textarea id="consulta-input" placeholder="Pega aquí la consulta del cliente…" rows="3"></textarea>
+          <div class="form-actions">
+            <button class="btn-primary" id="btn-enviar">⚡ Clasificar</button>
+            <span style="font-size:11px;color:var(--text-secondary)">Clasificación automática por palabras clave</span>
+          </div>
+        </div>
+        <div class="result-card" id="result-card">
+          <div class="section-label">✅ Respuesta generada</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:2px">
+            <span class="result-badge" id="result-badge">—</span>
+            <span class="result-confianza" id="result-confianza">Confianza: —</span>
+          </div>
+          <div class="result-respuesta">
+            <textarea id="result-textarea" rows="3"></textarea>
+          </div>
+          <div class="result-actions">
+            <button class="btn-sm btn-pink" id="btn-usar">✔ Usar respuesta</button>
+            <button class="btn-sm btn-gold" id="btn-reclasificar">↻ Reclasificar</button>
+            <button class="btn-ghost-sm" id="btn-descartar">✖ Descartar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: Historial -->
+      <div id="view-historial" class="view" style="display:none">
+        <div class="glass-panel">
+          <div class="section-label">📋 Historial</div>
+          <div class="search-wrap">
+            <input class="search-input" id="search-input" placeholder="Buscar consulta…">
+            <button class="search-go" id="search-btn">Ir</button>
+          </div>
+          <div class="filter-tabs">
+            <span class="filter-tab active" data-status="todas">Todas</span>
+            <span class="filter-tab" data-status="respondida">✔ Respondidas</span>
+            <span class="filter-tab" data-status="pendiente">⏳ Pendientes</span>
+            <span class="filter-tab" data-status="revisar">⚠ Revisar</span>
+          </div>
+          <div style="display:flex;gap:6px;margin-top:6px">
+            <button class="btn-sm btn-cyan" id="btn-export-csv">📥 Exportar CSV</button>
+            <button class="btn-sm" style="background:rgba(245,158,11,0.2);color:var(--neon-gold);border:1px solid rgba(245,158,11,0.3)" id="btn-export-json">📦 Exportar JSON</button>
+          </div>
+        </div>
+        <div class="historial-glass">
+          <div id="historial-list">
+            <div class="historial-empty">No hay consultas registradas.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW: Stats -->
+      <div id="view-stats" class="view" style="display:none">
+        <div class="glass-panel">
+          <div class="section-label">📊 Estadísticas</div>
+          <div class="stats-grid">
+            <div class="stats-card"><div class="stats-card-num" id="st-total">0</div><div class="stats-card-label">Total consultas</div></div>
+            <div class="stats-card"><div class="stats-card-num" id="st-ahorro">0</div><div class="stats-card-label">Min ahorrados</div></div>
+            <div class="stats-card"><div class="stats-card-num" id="st-precision">0%</div><div class="stats-card-label">Precisión IA</div></div>
+            <div class="stats-card"><div class="stats-card-num" id="st-pendientes">0</div><div class="stats-card-label">Pendientes</div></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="section-label">Por categoría</div>
+            <div id="poll-container" style="margin-top:4px"></div>
+          </div>
+          <div style="margin-top:12px">
+            <div class="section-label">Últimos 7 días</div>
+            <div class="daily-chart" id="daily-chart"></div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ─── RIGHT RAIL ─── -->
+    <div class="right-rail">
+
+      <div class="rail-stat">
+        <div class="rail-stat-num" id="rail-hoy">0</div>
+        <div class="rail-stat-label">Consultas hoy</div>
+      </div>
+      <div class="rail-stat">
+        <div class="rail-stat-num" id="rail-semana">0</div>
+        <div class="rail-stat-label">Esta semana</div>
+      </div>
+      <div class="rail-stat">
+        <div class="rail-stat-num" id="rail-ahorro">0</div>
+        <div class="rail-stat-label">Min ahorrados</div>
+      </div>
+
+      <div class="rail-box">
+        <hd>💡 Tips</hd>
+        <p>Personaliza respuestas antes de usarlas. Revisa siempre antes de enviar al cliente.</p>
+      </div>
+
+      <div class="rail-box">
+        <hd>📊 Categorías</hd>
+        <div id="rail-poll"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── FOOTER ─── -->
+  <div class="footer-bar">
+    © 2026 Consultas Express · <span class="neon-tag">⚡ NEON</span>
+    <br><br>
+    ✨ Presentación de <strong>Marco Antonio Chamorro Villoria</strong> · Alumno de <a href="https://github.com/ksizorCode/Antigravity" target="_blank">IA Práctica · Antigravity</a><br>
+    🐙 <a href="https://github.com/Marconato78" target="_blank">github.com/Marconato78</a> · Hecho con 💚 y mucha IA
+
+  </div>
+
+</div>
+
+<!-- ─── MODAL ─── -->
+<div class="modal-overlay" id="modal">
+  <div class="modal-box">
+    <div class="modal-title"><span id="modal-title">Detalle</span><button class="modal-close" id="modal-close">✕</button></div>
+    <div id="modal-body"></div>
+    <div class="modal-actions" id="modal-actions" style="display:flex;gap:6px;margin-top:10px;padding-top:8px;border-top:1px solid rgba(168,85,247,0.15);flex-wrap:wrap"></div>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+<input type="file" id="file-import" accept=".json" style="display:none">
+
+<script>
+/* ═══════════════════════════════════════════════════
+   CONSULTAS EXPRESS  —  JS Application
+   ═══════════════════════════════════════════════════ */
+
+const APP = {
+  consultas: [],
+  idCounter: 1,
+  currentStatusFilter: 'todas',
+  searchQuery: '',
+  editingId: null,
+
+  categorias: [
+    { id:'precio',     label:'Precio',     emoji:'💰', color:'gold' },
+    { id:'horario',    label:'Horario',    emoji:'🕐', color:'cyan' },
+    { id:'envio',      label:'Envío',      emoji:'📦', color:'purple' },
+    { id:'devolucion', label:'Devolución', emoji:'🔄', color:'red' },
+    { id:'producto',   label:'Producto',   emoji:'🏷️', color:'pink' },
+    { id:'factura',    label:'Factura',    emoji:'🧾', color:'gold' },
+    { id:'otro',       label:'Otro',       emoji:'❓', color:'gray' },
+  ],
+
+  respuestasBase: {
+    precio:     'Gracias por tu consulta. El precio actual es [X]€ IVA incluido. ¿Necesitas más información?',
+    horario:    'Nuestro horario de atención es L-V de 9:00 a 18:00, y sábados de 10:00 a 14:00.',
+    envio:      'Realizamos envíos en 24-48h laborables. Gratis para pedidos >50€.',
+    devolucion: 'Aceptamos devoluciones hasta 30 días. El producto debe estar en su embalaje original.',
+    producto:   'Te confirmamos disponibilidad. El plazo de entrega estimado es de [X] días.',
+    factura:    'Recibirás tu factura por email en 24h. Indícanos los datos de facturación.',
+    otro:       'Gracias por tu consulta. Te responderemos en menos de 24h.',
+  },
+
+  keywords: [
+    { cat:'precio',     words:['cuanto cuesta','precio','coste','tarifa','€','euro','euros','valor','importe','presupuesto','costar','vale','cuesta','cuanto vale','precios','cuanto vale'], weight:2 },
+    { cat:'horario',    words:['horario','hora','abierto','cerrado','cuando','dias','horas','abren','cierran','manana','tarde','horarios','horas de atencion','abris','estais abiertos'], weight:2 },
+    { cat:'envio',      words:['envio','entrega','enviar','pedido','llegar','plazo','tardar','recibir','envios','enviamos','cuanto tarda','cuando llega','gastos de envio','transporte','pedidos'], weight:2 },
+    { cat:'devolucion', words:['devolver','devolucion','cambio','reembolso','garantia','defectuoso','roto','fallo','cambiarlo','devolverlo','reembolsar','dinero'], weight:2 },
+    { cat:'producto',   words:['producto','modelo','talla','color','version','disponible','stock','caracteristicas','especificaciones','medidas','material','compatible','tamano'], weight:2 },
+    { cat:'factura',    words:['factura','facturacion','pago','pagado','recibo','cobro','domiciliacion','facturas','pagar','transferencia','tarjeta','metodo de pago'], weight:2 },
+  ],
+
+  init(){
+    this.loadState()
+    this.setupListeners()
+    // renderAll and animarAll called by loadState/loadSeedFromJSON after data ready
+  },
+  
+  ready(){
+    this.renderAll()
+    this.animarAll()
+  },
+
+  loadState(){
+    try{
+      const data = JSON.parse(localStorage.getItem('consultasExpress'))
+      if(data && data.consultas && data.consultas.length > 0){
+        this.consultas = data.consultas
+        this.idCounter = data.idCounter || 1
+        this._seedLoaded = true
+        this.ready()
+        return
+      }
+    }catch(e){}
+    // load seed from data.json
+    this.loadSeedFromJSON()
+  },
+
+  async loadSeedFromJSON(){
+    try{
+      const res = await fetch('data.json')
+      if(!res.ok) throw new Error('No data.json')
+      const seed = await res.json()
+      this.consultas = seed.map((s,i) => ({
+        id: `C-${String(i+1).padStart(3,'0')}`,
+        texto: s.texto,
+        categoria: s.categoria,
+        respuesta: s.respuesta,
+        respuestaFinal: s.respuesta,
+        confianza: s.confianza,
+        timestamp: s.timestamp,
+        editada: s.editada || false,
+        estado: s.estado || 'pendiente',
+      }))
+      this.idCounter = this.consultas.length + 1
+      this._seedLoaded = true
+      this.saveState()
+      this.renderAll()
+    }catch(e){
+      this.consultas = []
+      this.idCounter = 1
+      this._seedLoaded = true
+      this.renderAll()
+    }
+  },
+
+  exportJSON(){
+    if(!this.consultas.length){ this.toast('No hay datos','err'); return }
+    const data = { consultas: this.consultas, idCounter: this.idCounter, exportedAt: new Date().toISOString() }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = `consultas-express-backup-${new Date().toISOString().slice(0,10)}.json`
+    a.click()
+    URL.revokeObjectURL(a.href)
+    this.toast('📦 JSON exportado','ok')
+  },
+
+  importJSON(file){
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try{
+        const data = JSON.parse(e.target.result)
+        if(!data.consultas || !Array.isArray(data.consultas)){
+          this.toast('Formato inválido','err'); return
+        }
+        this.consultas = data.consultas
+        this.idCounter = data.idCounter || this.consultas.length + 1
+        this.saveState()
+        this.renderAll()
+        this.toast(`📦 Importadas ${this.consultas.length} consultas`,'ok')
+      }catch(err){
+        this.toast('Error al leer archivo','err')
+      }
+    }
+    reader.readAsText(file)
+  },
+
+  saveState(){
+    localStorage.setItem('consultasExpress', JSON.stringify({
+      consultas: this.consultas,
+      idCounter: this.idCounter
+    }))
+  },
+
+  clasificar(texto){
+    const t = texto.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+    let scores = { otro: 1 }
+    for(const rule of this.keywords){
+      let score = 0
+      for(const w of rule.words){
+        if(t.includes(w)) score += rule.weight
+      }
+      if(score > 0) scores[rule.cat] = (scores[rule.cat]||0) + score
+    }
+    const total = Object.values(scores).reduce((a,b)=>a+b,0)
+    const maxCat = Object.keys(scores).reduce((a,b)=>scores[a]>scores[b]?a:b)
+    const confianza = Math.min(Math.round((scores[maxCat]/total)*100), 99)
+    return { categoria: maxCat, confianza, respuesta: this.generarRespuesta(maxCat, texto) }
+  },
+
+  generarRespuesta(cat, texto){
+    let base = this.respuestasBase[cat] || this.respuestasBase.otro
+    const match = texto.match(/(\d+[\.,]?\d*)\s*€?/)
+    if(match) base = base.replace('[X]', match[1])
+    else base = base.replace('[X]', 'estimado')
+    return base
+  },
+
+  agregarConsulta(texto){
+    const { categoria, confianza, respuesta } = this.clasificar(texto)
+    const c = {
+      id: `C-${String(this.idCounter++).padStart(3,'0')}`,
+      texto, categoria, respuesta,
+      respuestaFinal: respuesta,
+      confianza, timestamp: Date.now(),
+      editada: false,
+      estado: confianza >= 60 ? 'pendiente' : 'revisar'
+    }
+    this.consultas.unshift(c)
+    this.saveState()
+    return c
+  },
+
+  marcarRespondida(id){
+    const c = this.consultas.find(x=>x.id===id)
+    if(c){ c.estado='respondida'; this.saveState() }
+  },
+
+  actualizarRespuesta(id, t){
+    const c = this.consultas.find(x=>x.id===id)
+    if(c){ c.respuestaFinal=t; c.editada=true; this.saveState() }
+  },
+
+  eliminarConsulta(id){
+    this.consultas = this.consultas.filter(x=>x.id!==id)
+    this.saveState()
+  },
+
+  resetDatos(){
+    if(confirm('¿Eliminar todos los datos? No se puede deshacer.')){
+      localStorage.removeItem('consultasExpress')
+      this.consultas = []
+      this.idCounter = 1
+      this.loadState()
+      this.renderAll()
+      this.toast('Datos restaurados desde seed', 'ok')
+    }
+  },
+
+  calcularStats(){
+    const hoy = new Date().toDateString()
+    const weekAgo = Date.now() - 7*24*60*60*1000
+    return {
+      hoy: this.consultas.filter(c=>new Date(c.timestamp).toDateString()===hoy).length,
+      semana: this.consultas.filter(c=>c.timestamp>weekAgo).length,
+      total: this.consultas.length,
+      precision: this.consultas.length>0 ? Math.round(this.consultas.filter(c=>c.estado==='respondida').length/this.consultas.length*100) : 0,
+      pendientes: this.consultas.filter(c=>c.estado==='pendiente'||c.estado==='revisar').length,
+      ahorro: this.consultas.filter(c=>c.estado==='respondida').length * 3
+    }
+  },
+
+  renderAll(){
+    const s = this.calcularStats()
+    document.getElementById('masthead-badge').textContent = `HOY: ${s.hoy}`
+    document.getElementById('sn-hoy').textContent = s.hoy
+    document.getElementById('sn-semana').textContent = s.semana
+    document.getElementById('sn-ahorro').textContent = s.ahorro+'min'
+    document.getElementById('sn-precision').textContent = s.precision+'%'
+    this.renderRightRail()
+    this.renderView()
+  },
+
+  animarAll(){
+    const s = this.calcularStats()
+    this.animarNum('rail-hoy', s.hoy)
+    this.animarNum('rail-semana', s.semana)
+    this.animarNum('rail-ahorro', s.ahorro)
+  },
+
+  renderRightRail(){
+    const s = this.calcularStats()
+    document.getElementById('rail-hoy').textContent = s.hoy
+    document.getElementById('rail-semana').textContent = s.semana
+    document.getElementById('rail-ahorro').textContent = s.ahorro
+    this.renderRailPoll()
+  },
+
+  renderRailPoll(){
+    const container = document.getElementById('rail-poll')
+    const counts = {}
+    for(const c of this.categorias) counts[c.id] = 0
+    for(const c of this.consultas) counts[c.categoria] = (counts[c.categoria]||0)+1
+    const max = Math.max(...Object.values(counts), 1)
+    const colors = { gold:'var(--neon-gold)', cyan:'var(--neon-cyan)', purple:'var(--neon-purple)', red:'var(--neon-red)', pink:'var(--neon-pink)', gray:'var(--text-secondary)' }
+    container.innerHTML = this.categorias.map(cat => {
+      const n = counts[cat.id]||0
+      const pct = Math.round((n/max)*100)
+      const color = colors[cat.color] || 'var(--neon-pink)'
+      return `<div class="poll-item"><span class="poll-label" style="color:${color}">${cat.emoji} ${cat.label}</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="width:${pct}%;background:${color}"></div></div><span class="poll-count">${n}</span></div>`
+    }).join('')
+  },
+
+  renderView(){
+    const active = document.querySelector('.nav-link.active')
+    const view = active ? active.dataset.view : 'nueva'
+    document.querySelectorAll('.view').forEach(v=>v.style.display='none')
+    const el = document.getElementById('view-'+view)
+    if(el){
+      el.style.display='block'
+      if(view==='historial') this.renderHistorial()
+      if(view==='stats') this.renderStats()
+    }
+  },
+
+  setView(v){
+    document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'))
+    document.querySelector(`.nav-link[data-view="${v}"]`).classList.add('active')
+    this.renderView()
+  },
+
+  renderHistorial(){
+    const list = document.getElementById('historial-list')
+    let items = [...this.consultas]
+    if(this.currentStatusFilter!=='todas') items = items.filter(c=>c.estado===this.currentStatusFilter)
+    if(this.searchQuery){
+      const q = this.searchQuery.toLowerCase()
+      items = items.filter(c=>c.texto.toLowerCase().includes(q)||c.respuestaFinal.toLowerCase().includes(q))
+    }
+    if(!items.length){
+      list.innerHTML = '<div class="historial-empty">No se encontraron consultas.</div>'
+      return
+    }
+    const catMap = {}
+    for(const c of this.categorias) catMap[c.id] = c
+    list.innerHTML = items.map((c,i) => {
+      const cat = catMap[c.categoria] || { label:c.categoria, emoji:'❓' }
+      const ts = new Date(c.timestamp).toLocaleDateString('es-ES',{day:'2-digit',month:'2-digit'})
+      const est = c.estado
+      const estLabel = { respondida:'✔', pendiente:'⏳', revisar:'⚠' }[est]||''
+      return `<div class="consulta-card cat-${c.categoria}" data-id="${c.id}" style="animation:fadeUp ${0.3+i*0.03}s ease both">
+        <span class="card-badge ${c.categoria}">${cat.emoji} ${cat.label}</span>
+        <span class="card-text">${this.esc(c.texto)}</span>
+        <span class="card-meta">${ts}</span>
+        <span class="card-status ${est}">${estLabel}</span>
+        <span class="card-arrow">▶</span>
+      </div>`
+    }).join('')
+    list.querySelectorAll('.consulta-card').forEach(el=>{
+      el.addEventListener('click',()=>this.abrirModal(el.dataset.id))
+    })
+  },
+
+  renderStats(){
+    const s = this.calcularStats()
+    this.animarNum('st-total', s.total)
+    this.animarNum('st-ahorro', s.ahorro)
+    document.getElementById('st-precision').textContent = s.precision+'%'
+    this.animarNum('st-pendientes', s.pendientes)
+    this.renderStatsPoll()
+    this.renderDailyChart()
+  },
+
+  renderStatsPoll(){
+    const container = document.getElementById('poll-container')
+    const counts = {}
+    for(const c of this.categorias) counts[c.id] = 0
+    for(const c of this.consultas) counts[c.categoria] = (counts[c.categoria]||0)+1
+    const max = Math.max(...Object.values(counts), 1)
+    const colors = { gold:'var(--neon-gold)', cyan:'var(--neon-cyan)', purple:'var(--neon-purple)', red:'var(--neon-red)', pink:'var(--neon-pink)', gray:'var(--text-secondary)' }
+    container.innerHTML = this.categorias.map(cat => {
+      const n = counts[cat.id]||0
+      const pct = Math.round((n/max)*100)
+      const color = colors[cat.color] || 'var(--neon-pink)'
+      return `<div class="poll-item"><span class="poll-label" style="color:${color}">${cat.emoji} ${cat.label}</span><div class="poll-bar-wrap"><div class="poll-bar-fill" style="width:${pct}%;background:${color}"></div></div><span class="poll-count">${n}</span></div>`
+    }).join('')
+  },
+
+  renderDailyChart(){
+    const container = document.getElementById('daily-chart')
+    const days = []
+    const today = new Date()
+    for(let i=6;i>=0;i--){
+      const d = new Date(today); d.setDate(d.getDate()-i)
+      days.push({ label: d.toLocaleDateString('es-ES',{weekday:'short'}).slice(0,2).toUpperCase(), date: d.toDateString(), count:0 })
+    }
+    for(const c of this.consultas){
+      const day = days.find(x=>x.date===new Date(c.timestamp).toDateString())
+      if(day) day.count++
+    }
+    const max = Math.max(...days.map(d=>d.count),1)
+    container.innerHTML = days.map(d => {
+      const pct = Math.round((d.count/max)*100)
+      return `<div class="daily-bar"><div class="daily-fill" style="height:${pct}%;background:linear-gradient(to top,var(--neon-pink),var(--neon-cyan));box-shadow:0 0 8px rgba(255,42,117,0.3)"></div><span class="daily-label">${d.label}</span><span class="daily-count">${d.count}</span></div>`
+    }).join('')
+  },
+
+  abrirModal(id){
+    const c = this.consultas.find(x=>x.id===id)
+    if(!c) return
+    const cat = this.categorias.find(x=>x.id===c.categoria)||{label:c.categoria,emoji:'❓'}
+    const ts = new Date(c.timestamp).toLocaleString('es-ES')
+    const estLbl = { respondida:'✔ Respondida', pendiente:'⏳ Pendiente', revisar:'⚠ Revisar' }[c.estado]||c.estado
+    document.getElementById('modal-title').textContent = `📄 ${c.id}`
+    document.getElementById('modal-body').innerHTML = `
+      <div class="modal-field"><strong>Fecha:</strong> ${ts}</div>
+      <div class="modal-field"><strong>Categoría:</strong> ${cat.emoji} ${cat.label}</div>
+      <div class="modal-field"><strong>Confianza:</strong> ${c.confianza}%</div>
+      <div class="modal-field"><strong>Estado:</strong> ${estLbl}</div>
+      <div class="dotted"></div>
+      <div class="modal-field"><strong>Consulta:</strong></div>
+      <div style="font-size:12px;color:var(--text-primary);background:rgba(10,0,21,0.4);padding:8px;border-radius:6px;margin:2px 0 8px">${this.esc(c.texto)}</div>
+      <div class="modal-field"><strong>Respuesta:</strong></div>
+      <textarea class="modal-textarea" id="modal-respuesta">${this.esc(c.respuestaFinal)}</textarea>
+    `
+    document.getElementById('modal-actions').innerHTML = `
+      <button class="btn-sm btn-pink" id="modal-responder">✔ Marcar respondida</button>
+      <button class="btn-sm btn-gold" id="modal-guardar">💾 Guardar</button>
+      <button class="btn-sm" style="background:rgba(255,0,68,0.2);color:var(--neon-red);border:1px solid rgba(255,0,68,0.3)" id="modal-eliminar">🗑️ Eliminar</button>
+      <button class="btn-ghost-sm" id="modal-cancelar">✖ Cerrar</button>
+    `
+    document.getElementById('modal').classList.add('visible')
+    document.getElementById('modal-close').onclick = ()=>this.cerrarModal()
+    document.getElementById('modal-cancelar').onclick = ()=>this.cerrarModal()
+    document.getElementById('modal-responder').onclick = ()=>{
+      this.marcarRespondida(id); this.cerrarModal(); this.renderAll(); this.toast('✔ Marcada como respondida','ok')
+    }
+    document.getElementById('modal-guardar').onclick = ()=>{
+      this.actualizarRespuesta(id, document.getElementById('modal-respuesta').value)
+      this.cerrarModal(); this.renderAll(); this.toast('💾 Respuesta guardada','ok')
+    }
+    document.getElementById('modal-eliminar').onclick = ()=>{
+      if(confirm('¿Eliminar permanentemente?')){ this.eliminarConsulta(id); this.cerrarModal(); this.renderAll(); this.toast('🗑️ Eliminada','ok') }
+    }
+  },
+
+  cerrarModal(){
+    document.getElementById('modal').classList.remove('visible')
+  },
+
+  toast(msg,type=''){
+    const el = document.getElementById('toast')
+    el.textContent = msg
+    el.className = 'toast visible '+(type||'')
+    clearTimeout(this._tt)
+    this._tt = setTimeout(()=>el.classList.remove('visible'),2500)
+  },
+
+  esc(t){ const d=document.createElement('div'); d.textContent=t; return d.innerHTML },
+
+  animarNum(elId, target, dur=400){
+    const el = document.getElementById(elId)
+    if(!el) return
+    const cur = parseInt(el.textContent)||0
+    if(cur===target) return
+    const step = Math.max(1,Math.ceil(Math.abs(target-cur)/20))
+    let val = cur
+    const iv = setInterval(()=>{
+      if(target>cur) val=Math.min(val+step,target); else val=Math.max(val-step,target)
+      el.textContent = val
+      if(val===target) clearInterval(iv)
+    },dur/20)
+  },
+
+  exportCSV(){
+    if(!this.consultas.length){ this.toast('No hay datos','err'); return }
+    const h = 'ID;Fecha;Categoría;Confianza;Estado;Consulta;Respuesta\n'
+    const rows = this.consultas.map(c=>{
+      const f=new Date(c.timestamp).toLocaleDateString('es-ES')
+      const ct=this.categorias.find(x=>x.id===c.categoria)
+      return `${c.id};${f};${ct?ct.label:c.categoria};${c.confianza}%;${c.estado};"${c.texto.replace(/"/g,'""')}";"${c.respuestaFinal.replace(/"/g,'""')}"`
+    }).join('\n')
+    const blob = new Blob(['\uFEFF'+h+rows],{type:'text/csv;charset=utf-8;'})
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'consultas-express.csv'
+    a.click()
+    URL.revokeObjectURL(a.href)
+    this.toast('📥 CSV exportado','ok')
+  },
+
+  setupListeners(){
+    document.querySelectorAll('.nav-link').forEach(l=>{
+      l.addEventListener('click',()=>this.setView(l.dataset.view))
+    })
+    document.getElementById('btn-enviar').addEventListener('click',()=>this.handleSubmit())
+    document.getElementById('consulta-input').addEventListener('keydown',e=>{
+      if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); this.handleSubmit() }
+    })
+    document.getElementById('btn-usar').addEventListener('click',()=>{
+      const id=this._lastId; if(!id) return
+      this.marcarRespondida(id)
+      document.getElementById('result-card').classList.remove('visible')
+      document.getElementById('consulta-input').value=''
+      this.renderAll()
+      this.toast('✔ Respuesta usada','ok')
+    })
+    document.getElementById('btn-reclasificar').addEventListener('click',()=>{
+      const id=this._lastId; if(!id) return
+      const c=this.consultas.find(x=>x.id===id); if(!c) return
+      const r=this.clasificar(c.texto)
+      Object.assign(c,r); c.respuestaFinal=r.respuesta; this.saveState()
+      this.mostrarResultado(c)
+      this.toast('↻ Reclasificado','ok')
+    })
+    document.getElementById('btn-descartar').addEventListener('click',()=>{
+      const id=this._lastId; if(!id) return
+      this.eliminarConsulta(id)
+      document.getElementById('result-card').classList.remove('visible')
+      document.getElementById('consulta-input').value=''
+      this.renderAll()
+      this.toast('✖ Descartada','ok')
+    })
+    document.getElementById('search-input').addEventListener('input',e=>{this.searchQuery=e.target.value; this.renderHistorial()})
+    document.getElementById('search-btn').addEventListener('click',()=>this.renderHistorial())
+    document.querySelectorAll('.filter-tab').forEach(t=>{
+      t.addEventListener('click',()=>{
+        document.querySelectorAll('.filter-tab').forEach(x=>x.classList.remove('active'))
+        t.classList.add('active')
+        this.currentStatusFilter=t.dataset.status
+        this.renderHistorial()
+      })
+    })
+    document.getElementById('btn-export-csv').addEventListener('click',()=>this.exportCSV())
+    document.getElementById('file-import').addEventListener('change',e=>{if(e.target.files[0]){this.importJSON(e.target.files[0]);e.target.value=''}})
+    document.getElementById('btn-export-csv').addEventListener('click',()=>this.exportCSV())
+    document.getElementById('btn-export-json').addEventListener('click',()=>this.exportJSON())
+    document.getElementById('modal').addEventListener('click',e=>{if(e.target===document.getElementById('modal')) this.cerrarModal()})
+    document.addEventListener('keydown',e=>{if(e.key==='Escape') this.cerrarModal()})
+  },
+
+  handleSubmit(){
+    const input = document.getElementById('consulta-input')
+    const texto = input.value.trim()
+    if(!texto){ this.toast('Escribe una consulta','err'); return }
+    const btn = document.getElementById('btn-enviar')
+    btn.disabled=true; btn.textContent='⏳ Clasificando…'
+    setTimeout(()=>{
+      const c = this.agregarConsulta(texto)
+      this._lastId = c.id
+      this.mostrarResultado(c)
+      this.renderAll()
+      btn.disabled=false; btn.textContent='⚡ Clasificar'
+    },400)
+  },
+
+  mostrarResultado(c){
+    const card = document.getElementById('result-card')
+    const cat = this.categorias.find(x=>x.id===c.categoria)||{label:c.categoria,emoji:'❓'}
+    document.getElementById('result-badge').textContent = `${cat.emoji} ${cat.label}`
+    document.getElementById('result-badge').className = `result-badge ${c.categoria}`
+    document.getElementById('result-confianza').textContent = `Confianza: ${c.confianza}%`
+    document.getElementById('result-textarea').value = c.respuestaFinal
+    card.classList.add('visible')
+    card.style.animation='none'; card.offsetHeight; card.style.animation='fadeUp .3s ease both'
+  },
+}
+
+document.addEventListener('DOMContentLoaded',()=>APP.init())
+</script>
+</body>
+</html>

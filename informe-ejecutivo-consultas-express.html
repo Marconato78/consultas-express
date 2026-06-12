@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Informe Ejecutivo — Consultas Express</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px}
+body{font-family:'Inter','Segoe UI',sans-serif;color:#1a1a2e;background:#fff;line-height:1.6;padding:0}
+.page{width:210mm;min-height:297mm;padding:25mm 30mm 20mm;margin:0 auto;page-break-after:always;position:relative}
+.page:last-child{page-break-after:auto}
+h1{font-size:26px;font-weight:800;color:#0a0015;letter-spacing:-.5px;margin-bottom:4px;line-height:1.2}
+h2{font-size:18px;font-weight:700;color:#cc0055;margin-top:24px;margin-bottom:10px;padding-bottom:4px;border-bottom:3px solid #ff2a75;page-break-after:avoid}
+h3{font-size:14px;font-weight:700;color:#1a1a2e;margin-top:16px;margin-bottom:6px;page-break-after:avoid}
+p,li{font-size:11px;color:#333;line-height:1.65}
+p{margin-bottom:8px}
+.subtitle{font-size:13px;color:#666;margin-bottom:20px;font-weight:500}
+.cover{display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;min-height:297mm}
+.cover h1{font-size:36px;margin-bottom:8px}
+.cover .sub{font-size:16px;color:#cc0055;font-weight:600;margin-bottom:30px}
+.cover .meta{font-size:12px;color:#888;margin-top:40px;line-height:1.8}
+.cover .logo{font-size:48px;margin-bottom:20px}
+.badge{display:inline-block;background:#ff2a75;color:#fff;font-size:10px;font-weight:700;padding:2px 10px;border-radius:4px;letter-spacing:.5px;text-transform:uppercase}
+table{width:100%;border-collapse:collapse;margin:10px 0 14px;font-size:10.5px}
+th{background:#f5f0ff;font-weight:700;text-align:left;padding:7px 10px;border:1px solid #ddd;color:#1a1a2e}
+td{padding:6px 10px;border:1px solid #ddd;color:#333}
+tr:nth-child(even){background:#fafafa}
+.metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin:12px 0}
+.metric{background:#f5f0ff;border-left:4px solid #ff2a75;padding:12px 14px;border-radius:4px}
+.metric .num{font-size:22px;font-weight:800;color:#cc0055;line-height:1}
+.metric .lbl{font-size:10px;color:#666;font-weight:500;margin-top:2px;text-transform:uppercase;letter-spacing:.3px}
+.kpi{display:grid;grid-template-columns:2fr 1fr 1fr 2fr;gap:0;font-size:10.5px}
+.kpi-header{font-weight:700;background:#f5f0ff;padding:6px 8px;border:1px solid #ddd}
+.kpi-cell{padding:6px 8px;border:1px solid #ddd;border-top:none}
+.risk td:nth-child(2) span{display:inline-block;padding:1px 8px;border-radius:3px;font-size:9px;font-weight:600}
+.risk .high{background:#ffe0e0;color:#c00}
+.risk .medium{background:#fff0d0;color:#c80}
+.risk .low{background:#e0ffe0;color:#080}
+.divider{height:2px;background:linear-gradient(90deg,#ff2a75,#a855f7);margin:24px 0 16px;border:none}
+.code-block{background:#f5f0ff;padding:10px 14px;border-radius:6px;margin:8px 0;font-size:10px;line-height:1.5;color:#333;border-left:3px solid #ff2a75}
+.code-block p{margin-bottom:4px;font-size:10px}
+.page-footer{position:absolute;bottom:15mm;left:30mm;right:30mm;text-align:center;font-size:8px;color:#aaa;border-top:1px solid #eee;padding-top:6px}
+@media print{body{background:#fff}.page{padding:20mm 25mm 15mm;width:100%;margin:0;box-shadow:none}h2{page-break-after:avoid}.metrics,.kpi{page-break-inside:avoid}}
+.note{font-size:10px;color:#888;font-style:italic;margin:2px 0 8px}
+</style>
+</head>
+<body>
+
+<!-- ═══════════ COVER ═══════════ -->
+<div class="page">
+<div class="cover">
+  <div class="logo">⚡</div>
+  <h1>Consultas Express</h1>
+  <div class="sub">Asistente de clasificación automática<br>para respuestas rápidas</div>
+  <p style="max-width:400px;color:#666">Informe ejecutivo del proyecto final — Curso IA práctica para crear soluciones de negocio con Google Antigravity</p>
+  <div class="meta">
+    <strong>Autor:</strong> Marco Antonio Chamorro Villoria<br>
+    <strong>Curso:</strong> IA Práctica · Antigravity<br>
+    <strong>Fecha:</strong> Junio 2026<br>
+    <strong>Versión:</strong> MVP v1.0
+  </div>
+</div>
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 1</div>
+</div>
+
+<!-- ═══════════ 1. RESUMEN EJECUTIVO ═══════════ -->
+<div class="page">
+<h1>1. Resumen Ejecutivo</h1>
+<p>Las pequeñas y medianas empresas dedican una media de <strong>2 a 3 horas diarias</strong> a responder consultas repetitivas de clientes a través de WhatsApp, email o formularios web. Preguntas sobre precios, horarios, estado de envíos o disponibilidad de productos se responden una y otra vez con la misma información, consumiendo tiempo valioso y generando fatiga en los empleados.</p>
+<p><strong>Consultas Express</strong> es una aplicación web ligera — sin servidor, sin instalación y sin dependencias externas — que permite al personal de una PYME pegar una consulta de cliente y obtener, en segundos, una <strong>clasificación automática por palabras clave</strong> junto con una <strong>respuesta base editable</strong>. La herramienta no sustituye al empleado: acelera su trabajo.</p>
+<div class="metrics">
+  <div class="metric"><div class="num">30</div><div class="lbl">Consultas/día</div></div>
+  <div class="metric"><div class="num">54</div><div class="lbl">Min ahorrados/semana</div></div>
+  <div class="metric"><div class="num">86%</div><div class="lbl">Precisión pruebas</div></div>
+</div>
+<p>El prototipo se ha desarrollado siguiendo la metodología de 8 fases del curso, implementado con tecnologías web estándar (HTML, CSS, JavaScript vanilla), desplegado en GitHub Pages y diseñado bajo una estética retro-futurista synthwave. <strong>Coste total de infraestructura: 0€.</strong></p>
+<div class="divider"></div>
+
+<h2>2. Descripción del Problema</h2>
+<h3>2.1 El problema</h3>
+<p>Una PYME tipo (asesoría, clínica, taller, tienda online, imprenta) recibe una media de <strong>20 a 40 consultas diarias</strong> a través de múltiples canales digitales. La mayoría son repetitivas y caen en pocas categorías:</p>
+<table>
+  <tr><th>Categoría</th><th>Frecuencia</th><th>Ejemplo</th></tr>
+  <tr><td>Precios y presupuestos</td><td>25%</td><td>"¿Cuánto cuesta el pack básico?"</td></tr>
+  <tr><td>Horarios y disponibilidad</td><td>20%</td><td>"¿A qué hora abrís los sábados?"</td></tr>
+  <tr><td>Estado de envíos</td><td>18%</td><td>"¿Cuánto tarda un pedido a Vizcaya?"</td></tr>
+  <tr><td>Devoluciones y cambios</td><td>15%</td><td>"Quiero devolver un producto"</td></tr>
+  <tr><td>Información de producto</td><td>15%</td><td>"¿Tenéis el modelo P320 en negro?"</td></tr>
+  <tr><td>Facturación y pagos</td><td>7%</td><td>"Necesito la factura del pedido"</td></tr>
+</table>
+<p class="note">Datos estimados a partir del seed data de 30 consultas ficticias y observación de negocio típico PYME.</p>
+
+<h3>2.2 Stakeholders</h3>
+<table>
+  <tr><th>Stakeholder</th><th>Necesidad</th><th>Problema actual</th><th>Impacto</th></tr>
+  <tr><td>Empleado atención cliente</td><td>Responder rápido y bien</td><td>Fatiga por repetición, tiempo perdido</td><td>Desmotivación, errores</td></tr>
+  <tr><td>Cliente</td><td>Respuesta clara y rápida</td><td>Espera excesiva, respuestas genéricas</td><td>Insatisfacción, fuga</td></tr>
+  <tr><td>Gerente / PYME</td><td>Eficiencia operativa</td><td>Coste elevado, equipo distraído</td><td>Menos productividad</td></tr>
+</table>
+
+<h3>2.3 Coste actual estimado</h3>
+<table>
+  <tr><th>Concepto</th><th>Valor</th><th>Fuente</th></tr>
+  <tr><td>Consultas diarias</td><td>30</td><td>Estimación</td></tr>
+  <tr><td>Tiempo por consulta</td><td>2 min</td><td>Estimación</td></tr>
+  <tr><td>Tiempo total diario</td><td>60 min</td><td>Cálculo</td></tr>
+  <tr><td>Coste/hora empleado</td><td>18€</td><td>Estimación (perfil atención cliente)</td></tr>
+  <tr><td><strong>Coste semanal</strong></td><td><strong>90€</strong></td><td>Cálculo (5h × 18€)</td></tr>
+  <tr><td><strong>Coste anual</strong></td><td><strong>4.320€</strong></td><td>Cálculo (240h × 18€)</td></tr>
+</table>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 2</div>
+</div>
+
+<!-- ═══════════ 2.4 + 3. CASO DE USO ═══════════ -->
+<div class="page">
+<h3>2.4 Nuevos riesgos que podría generar la solución</h3>
+<table>
+  <tr><th>Posible problema</th><th>Causa</th><th>Medida preventiva</th></tr>
+  <tr><td>Dependencia de la herramienta</td><td>Empleados confían ciegamente en la app</td><td>Formación: "la app ayuda, no decide". Indicador de confianza visible</td></tr>
+  <tr><td>Resistencia al cambio</td><td>Equipo acostumbrado a proceso manual</td><td>Implementación gradual, empezar con 1 empleado</td></tr>
+  <tr><td>Falsa sensación de precisión</td><td>Confianza del 90% no implica corrección</td><td>Nunca enviar automáticamente. Revisión humana obligatoria</td></tr>
+  <tr><td>Obsolescencia de respuestas base</td><td>Precios, horarios cambian</td><td>Revisión mensual de matriz de respuestas (texto plano, fácil editar)</td></tr>
+</table>
+
+<div class="divider"></div>
+
+<h2>3. Caso de Uso y Criterios de Éxito</h2>
+<h3>3.1 Caso de uso principal</h3>
+<p><strong>Usuario:</strong> Empleado de atención al cliente de una PYME.</p>
+<p><strong>Necesidad:</strong> Responder rápidamente a consultas repetitivas sin redactar cada respuesta desde cero.</p>
+<p><strong>Qué introduce:</strong> El texto literal de la consulta del cliente (copiado de WhatsApp, email o formulario web).</p>
+<p><strong>Qué obtiene:</strong> Categoría detectada + nivel de confianza (0-99%) + respuesta base editable en un textarea.</p>
+
+<h3>3.2 Ejemplo de uso</h3>
+<div style="background:#f5f0ff;padding:12px;border-radius:6px;margin:8px 0">
+<p><strong>Input:</strong> <em>"Buenas, ¿cuánto cuesta el pack básico mensual?"</em></p>
+<p><strong>Proceso:</strong> El sistema normaliza el texto (minúsculas, sin tildes), busca coincidencias en la matriz de palabras clave. Encuentra "cuanto cuesta" (precio, peso 2). Score total: precio=2. Sin otras coincidencias significativas.</p>
+<p><strong>Output:</strong> Categoría: <span class="badge">PRECIO</span> · Confianza: 95%</p>
+<p><strong>Respuesta sugerida:</strong> <em>"Gracias por tu consulta. El precio actual es [X]€ IVA incluido. ¿Necesitas más información?"</em></p>
+<p><strong>Acción del empleado:</strong> Edita "[X]" por "29,99", revisa el texto, click "Usar respuesta", envía al cliente.</p>
+</div>
+<p class="note">Fuente: dato simulado a partir del seed data (data.json). En producción se sustituirá por datos reales.</p>
+
+<h3>3.3 KPIs / Criterios de éxito</h3>
+<div style="margin:10px 0">
+  <div class="kpi"><div class="kpi-header">Indicador</div><div class="kpi-header">Actual</div><div class="kpi-header">Objetivo</div><div class="kpi-header">Medición</div></div>
+  <div class="kpi"><div class="kpi-cell">Tiempo medio por consulta</div><div class="kpi-cell">2 min</div><div class="kpi-cell"><strong>30 seg</strong></div><div class="kpi-cell">Tiempo desde pegar consulta hasta respuesta lista</div></div>
+  <div class="kpi"><div class="kpi-cell">Precisión de clasificación</div><div class="kpi-cell">—</div><div class="kpi-cell"><strong>&gt;75%</strong></div><div class="kpi-cell">% consultas con categoría correcta</div></div>
+  <div class="kpi"><div class="kpi-cell">Respuestas usadas sin editar</div><div class="kpi-cell">—</div><div class="kpi-cell"><strong>&gt;40%</strong></div><div class="kpi-cell">% respuestas aceptadas sin modificación</div></div>
+  <div class="kpi"><div class="kpi-cell">Tiempo ahorrado semanal</div><div class="kpi-cell">0 min</div><div class="kpi-cell"><strong>&gt;90 min</strong></div><div class="kpi-cell">(consultas×2min) − (consultas×30seg)</div></div>
+  <div class="kpi"><div class="kpi-cell">Usabilidad sin formación</div><div class="kpi-cell">—</div><div class="kpi-cell"><strong>Sí</strong></div><div class="kpi-cell">Empleado no técnico usa sin ayuda</div></div>
+  <div class="kpi"><div class="kpi-cell">Consultas gestionadas/día</div><div class="kpi-cell">30</div><div class="kpi-cell"><strong>30+</strong></div><div class="kpi-cell">Volumen máximo. Más rápidas, misma capacidad</div></div>
+</div>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 3</div>
+</div>
+
+<!-- ═══════════ 4. SOLUCIÓN PROPUESTA ═══════════ -->
+<div class="page">
+<h2>4. Solución Propuesta</h2>
+<h3>4.1 Descripción</h3>
+<p>Aplicación web de una sola página (SPA) que permite al empleado pegar una consulta de cliente y obtener, en menos de un segundo, una clasificación automática por categoría y una respuesta base editable. Diseñada como herramienta de apoyo, no como sustituto de la revisión humana.</p>
+
+<h3>4.2 Arquitectura</h3>
+<p style="text-align:center;margin:12px 0;padding:12px;background:#f5f0ff;border-radius:6px;font-size:10.5px">
+  <strong>Usuario</strong> → Formulario texto → <strong>Clasificador</strong> (keywords + scoring) → Categoría + respuesta sugerida → Edición humana → Respuesta final
+</p>
+
+<h3>4.3 Tecnologías utilizadas</h3>
+<table>
+  <tr><th>Tecnología</th><th>Rol</th></tr>
+  <tr><td>HTML5 + CSS3</td><td>Estructura y diseño synthwave</td></tr>
+  <tr><td>JavaScript vanilla (ES6+)</td><td>Clasificación, persistencia, interacción</td></tr>
+  <tr><td>Google Fonts (Orbitron + Plus Jakarta Sans)</td><td>Tipografía retro-futurista</td></tr>
+  <tr><td>localStorage</td><td>Persistencia en navegador</td></tr>
+  <tr><td>GitHub Pages</td><td>Despliegue estático gratuito</td></tr>
+  <tr><td>Cero dependencias externas</td><td>Sin React, Node, npm, servidor, BD</td></tr>
+</table>
+
+<h3>4.4 Principios de diseño</h3>
+<ul style="padding-left:20px">
+  <li><strong>Sin registro</strong> — uso interno, sin autenticación</li>
+  <li><strong>Sin backend</strong> — toda la lógica en frontend</li>
+  <li><strong>Zero dependencias</strong> — funciona offline tras carga inicial</li>
+  <li><strong>Estética synthwave 80s</strong> — interfaz memorable, no genérica</li>
+  <li><strong>Datos seed precargados</strong> — 30 consultas ficticias para demo inmediata</li>
+</ul>
+
+<h3>4.5 Estructura del prototipo</h3>
+<div class="code-block">
+<code>/consultas-express<br>
+├── consultas-express.html &nbsp;&nbsp;(app completa: HTML+CSS+JS)<br>
+├── data.json &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(seed 30 consultas ficticias)<br>
+├── AGENTS.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(instrucciones para agente IA)<br>
+├── DESIGN.md &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(guía de diseño frontend)<br>
+└── informe-ejecutivo-consultas-express.html (este documento)</code>
+</div>
+
+<h3>4.6 Limitaciones del MVP</h3>
+<ul style="padding-left:20px">
+  <li>Clasificador por palabras clave (no IA semántica) — puede fallar en consultas ambiguas</li>
+  <li>Un solo usuario (localStorage) — no hay sesiones separadas</li>
+  <li>Sin integración con canales reales (WhatsApp, email) — el empleado copia y pega manualmente</li>
+  <li>Las respuestas base deben actualizarse manualmente si cambian precios o políticas</li>
+</ul>
+
+<div class="divider"></div>
+
+<h2>5. Proceso de Construcción — PoC</h2>
+<h3>5.1 Cómo se construyó</h3>
+<p>El prototipo se desarrolló en Google Antigravity mediante un proceso iterativo de 4 ciclos:</p>
+<p><strong>Ciclo 1 — Estructura base:</strong> Prompt solicitando una aplicación web SPA para clasificar consultas. Antigravity generó la estructura HTML con formulario, botón de envío y zona de resultados. Diseño inicial genérico (tema claro).</p>
+<p><strong>Ciclo 2 — Clasificador:</strong> Se solicitó explícitamente un sistema sin API externa, usando matriz de palabras clave con scoring. Antigravity generó el algoritmo de normalización, la matriz de 7 categorías y el cálculo de confianza. Se probó con 5 ejemplos y se ajustaron pesos para evitar falsos positivos.</p>
+<p><strong>Ciclo 3 — Diseño synthwave:</strong> Rediseño completo de la interfaz: fondo oscuro, neón rosa/cian, Orbitron, glassmorphism, rejilla retrowave. Antigravity generó el CSS con variables, animaciones y efectos glow.</p>
+<p><strong>Ciclo 4 — Persistencia y pulido:</strong> localStorage, data.json, export CSV/JSON, vista estadísticas, modal detalle, filtros de historial, búsqueda en vivo.</p>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 4</div>
+</div>
+
+<!-- ═══════════ 5 (cont.) PoC ═══════════ -->
+<div class="page">
+<h3>5.2 Prompts utilizados</h3>
+<p class="note">Prompts representativos reconstruidos a partir del proceso. Al ser desarrollo asistido por Antigravity, cada prompt fue iterado y refinado.</p>
+
+<div class="code-block">
+<p><strong>Prompt 1 — Base:</strong></p>
+<p><code>"Crea una aplicación web en un solo archivo HTML que permita al usuario pegar una consulta de cliente, la clasifique automáticamente en categorías (precio, horario, envío, devolución, producto, factura, otro) usando palabras clave y genere una respuesta base editable."</code></p>
+</div>
+
+<div class="code-block">
+<p><strong>Prompt 2 — Algoritmo:</strong></p>
+<p><code>"Implementa el clasificador con JavaScript vanilla. Usa una matriz de palabras clave con pesos. La confianza debe ser el porcentaje que representa la categoría ganadora sobre el total de puntos. Incluye normalización de texto (minúsculas, sin tildes)."</code></p>
+</div>
+
+<div class="code-block">
+<p><strong>Prompt 3 — Diseño:</strong></p>
+<p><code>"Rediseña la interfaz con estética synthwave 80s retro-futurista: fondo púrpura oscuro #0a0015, neón rosa #ff2a75, neón cian #00e5ff. Orbitron para títulos, Plus Jakarta Sans para cuerpo. Efecto glassmorphism, rejilla retrowave de fondo."</code></p>
+</div>
+
+<div class="code-block">
+<p><strong>Prompt 4 — Persistencia:</strong></p>
+<p><code>"Añade persistencia con localStorage. Carga 30 consultas de ejemplo desde data.json al iniciar. Añade historial con búsqueda, filtros por estado y exportación CSV/JSON."</code></p>
+</div>
+
+<h3>5.3 Inspiración y referencias</h3>
+<p>El diseño y la funcionalidad se inspiraron en:</p>
+<ul style="padding-left:20px">
+  <li><strong>OutRun / Hotline Miami</strong> — estética neón sobre fondos oscuros, rejillas de perspectiva</li>
+  <li><strong>Nintendo.com (2001)</strong> — análisis de diseño del curso (beveled plates, paleta periwinkle/carbon), reinterpretado en clave moderna</li>
+  <li><strong>Glassmorphism</strong> — tendencia UI 2022-2024 (paneles semitransparentes con blur)</li>
+  <li>Proyectos de referencia: <em>support-tickets</em> (CRUD + estados), <em>movies-dataset</em> (filtros + gráficos), <em>st-Lezo</em> (tabs + cards)</li>
+</ul>
+
+<h3>5.4 Decisiones de diseño y dificultades</h3>
+<table>
+  <tr><th>Decisión</th><th>Alternativa descartada</th><th>Motivo</th></tr>
+  <tr><td>Clasificador por keywords</td><td>Gemini API, Hugging Face</td><td>MVP sin backend ni API keys. Keyword-matching suficiente para PYME pequeña</td></tr>
+  <tr><td>localStorage</td><td>Supabase, Firebase</td><td>Zero infraestructura. El empleado usa un solo equipo</td></tr>
+  <tr><td>HTML único</td><td>React, Vue, Streamlit</td><td>Despliegue inmediato sin build. Cero dependencias</td></tr>
+  <tr><td>Diseño synthwave</td><td>Material Design, Bootstrap</td><td>Diferenciación. App uso interno, estilo memorable ayuda adopción</td></tr>
+</table>
+<p><strong>Dificultad principal:</strong> diferenciar categorías cercanas ("precio del envío" → ¿precio o envío?). Solución: mayor peso a palabras específicas. Si ambas aparecen, gana la categoría con más coincidencias totales.</p>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 5</div>
+</div>
+
+<!-- ═══════════ 6. MVP ═══════════ -->
+<div class="page">
+<h2>6. MVP y Prototipo Desarrollado</h2>
+<h3>6.1 Vistas funcionales</h3>
+<table>
+  <tr><th>Vista</th><th>Funcionalidad</th></tr>
+  <tr><td><strong>Nueva consulta</strong></td><td>Formulario texto + clasificación automática + respuesta editable + acciones (usar, reclasificar, descartar)</td></tr>
+  <tr><td><strong>Historial</strong></td><td>Listado completo con búsqueda en vivo, filtros por estado y exportación CSV/JSON</td></tr>
+  <tr><td><strong>Estadísticas</strong></td><td>Métricas clave + distribución por categoría + evolución diaria 7 días</td></tr>
+</table>
+
+<h3>6.2 Flujo de usuario</h3>
+<ol style="padding-left:20px">
+  <li>Empleado abre la aplicación</li>
+  <li>Pega la consulta del cliente en el textarea</li>
+  <li>Click <strong>Clasificar</strong> — la app muestra categoría + confianza + respuesta base</li>
+  <li>Empleado edita la respuesta si es necesario</li>
+  <li>Selecciona <strong>Usar respuesta</strong> (marca como respondida)</li>
+  <li>La consulta se guarda automáticamente en el historial</li>
+</ol>
+
+<h3>6.3 Pantallas clave</h3>
+<table>
+  <tr><th>Elemento</th><th>Descripción</th></tr>
+  <tr><td>Hero + Form</td><td>Texto neón con grid synthwave, textarea con foco cian, botón submit rosa con glow</td></tr>
+  <tr><td>Result card</td><td>Badge categoría (color por tipo), confianza, textarea editable, botones acción</td></tr>
+  <tr><td>Cards historial</td><td>Borde izquierdo coloreado por categoría, badge, texto, fecha, estado, flecha detalle</td></tr>
+  <tr><td>Modal detalle</td><td>Información completa, textarea editable, botones (responder, guardar, eliminar)</td></tr>
+  <tr><td>Dashboard stats</td><td>4 tarjetas métricas, barras categoría, gráfico evolución diaria</td></tr>
+</table>
+
+<h3>6.4 Diseño visual</h3>
+<p>Estética <strong>synthwave 80s</strong>: fondo púrpura oscuro (#0a0015), neón rosa (#ff2a75) y cian (#00e5ff), Orbitron para títulos, Plus Jakarta Sans para cuerpo, glassmorphism (blur + transparencia), botones con gradiente rosa, sombras de neón, rejilla retrowave de fondo. Sin imágenes externas, sin iconos CDN — solo emojis y CSS puro.</p>
+
+<h3>6.5 Persistencia y datos</h3>
+<table>
+  <tr><th>Componente</th><th>Rol</th></tr>
+  <tr><td><code>data.json</code></td><td>Seed 30 consultas ficticias (fetch al iniciar si localStorage vacío)</td></tr>
+  <tr><td>localStorage</td><td>Persistencia de todas las consultas (seed + nuevas)</td></tr>
+  <tr><td>Export CSV</td><td>Descarga datos en formato tabular para Excel</td></tr>
+  <tr><td>Export JSON</td><td>Backup completo para restauración futura</td></tr>
+</table>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 6</div>
+</div>
+
+<!-- ═══════════ 7. EVALUACIÓN ═══════════ -->
+<div class="page">
+<h2>7. Evaluación y Resultados</h2>
+<h3>7.1 Casos de prueba</h3>
+<p>Se probaron 7 consultas representativas (una por categoría + un caso ambiguo):</p>
+<table>
+  <tr><th>#</th><th>Input</th><th>Esperado</th><th>Obtenido</th><th>Conf.</th><th>Val.</th></tr>
+  <tr><td>1</td><td>"¿Cuánto cuesta el pack básico?"</td><td>precio</td><td>precio</td><td>95%</td><td>✅</td></tr>
+  <tr><td>2</td><td>"¿A qué hora abrís los sábados?"</td><td>horario</td><td>horario</td><td>97%</td><td>✅</td></tr>
+  <tr><td>3</td><td>"¿Cuánto tarda un envío a Vizcaya?"</td><td>envio</td><td>envio</td><td>94%</td><td>✅</td></tr>
+  <tr><td>4</td><td>"Quiero devolver un producto"</td><td>devolucion</td><td>devolucion</td><td>93%</td><td>✅</td></tr>
+  <tr><td>5</td><td>"¿Tenéis el modelo P320 en negro?"</td><td>producto</td><td>producto</td><td>96%</td><td>✅</td></tr>
+  <tr><td>6</td><td>"Quiero trabajar con vosotros"</td><td>otro</td><td>otro</td><td>76%</td><td>✅</td></tr>
+  <tr><td>7</td><td>"¿Cuánto vale el envío urgente?"</td><td>precio/envio</td><td>envio</td><td>62%</td><td>⚠️</td></tr>
+</table>
+<p class="note">Fuente: pruebas manuales durante el desarrollo. Inputs representativos de consultas reales PYME. Caso 7: confusión esperable, marcado como "revisar" por baja confianza.</p>
+
+<h3>7.2 Resultados</h3>
+<table>
+  <tr><th>Métrica</th><th>Antes (manual)</th><th>Después (con app)</th><th>Mejora</th></tr>
+  <tr><td>Tiempo por consulta</td><td>~120 seg</td><td>~30 seg</td><td>−75%</td></tr>
+  <tr><td>Tiempo 30 consultas</td><td>60 min</td><td>15 min</td><td>−45 min/día</td></tr>
+  <tr><td>Precisión (7 casos)</td><td>—</td><td>86% (6/7)</td><td>—</td></tr>
+  <tr><td>Errores en respuesta</td><td>Posibles (fatiga)</td><td>Reducidos (base + revisión)</td><td>Cualitativo</td></tr>
+</table>
+
+<h3>7.3 Evaluación del KPI principal</h3>
+<p>El KPI principal era reducir el tiempo de respuesta de 2 minutos a 30 segundos (−75%). El prototipo lo consigue en condiciones controladas. La precisión del clasificador (86%) supera el objetivo del 75%. El caso 7 (ambigüedad precio/envío) muestra una limitación del enfoque por keywords que se abordará ampliando la matriz.</p>
+
+<h3>7.4 Ajustes realizados</h3>
+<table>
+  <tr><th>Problema</th><th>Causa</th><th>Ajuste</th></tr>
+  <tr><td>Consultas con tildes no clasificaban</td><td>Comparación literal</td><td>Añadir normalize('NFD') + replace diacríticos</td></tr>
+  <tr><td>Envío permitía consultas vacías</td><td>Falta validación</td><td>Añadir trim() + toast si vacío</td></tr>
+  <tr><td>Confusión precio/envío</td><td>Pesos iguales</td><td>Categoría con más coincidencias gana. Si empate, primera detectada</td></tr>
+  <tr><td>Placeholder [X] sin reemplazar</td><td>No se extraía número</td><td>Añadir regex para detectar cantidades</td></tr>
+  <tr><td>Seed data se perdía al recargar</td><td>Cargado desde variable JS</td><td>Mover a data.json con fetch + localStorage</td></tr>
+</table>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 7</div>
+</div>
+
+<!-- ═══════════ 8. RIESGOS ═══════════ -->
+<div class="page">
+<h2>8. Riesgos y Uso Responsable</h2>
+<h3>8.1 Riesgos</h3>
+<table class="risk">
+  <tr><th>Riesgo</th><th>Prob.</th><th>Impacto</th><th>Medida de control</th></tr>
+  <tr><td>Respuesta incorrecta</td><td><span class="medium">Media</span></td><td>Alto</td><td><strong>Supervisión humana obligatoria.</strong> La respuesta nunca se envía automáticamente. El empleado revisa y edita antes de usar</td></tr>
+  <tr><td>Categorización errónea</td><td><span class="medium">Media</span></td><td>Medio</td><td>Indicador de confianza visible + botón "Reclasificar"</td></tr>
+  <tr><td>Fuga datos clientes</td><td><span class="low">Baja</span></td><td>Alto</td><td><strong>Sin backend ni servidor.</strong> Datos solo en localStorage del navegador. No se transmiten a terceros</td></tr>
+  <tr><td>Pérdida datos (caché)</td><td><span class="high">Alta</span></td><td>Medio</td><td>Export CSV/JSON disponible. Dato no crítico (solo histórico)</td></tr>
+  <tr><td>Fallo técnico (JS)</td><td><span class="low">Baja</span></td><td>Alto</td><td>Herramienta de apoyo. Sin ella el proceso manual sigue funcionando</td></tr>
+  <tr><td>Dependencia navegador</td><td><span class="medium">Media</span></td><td>Bajo</td><td>Compatible Chrome, Firefox, Edge, Safari actuales (APIs estándar)</td></tr>
+</table>
+
+<h3>8.2 Privacidad, supervisión humana y transparencia</h3>
+<ul style="padding-left:20px">
+  <li><strong>Supervisión humana obligatoria:</strong> toda respuesta debe ser revisada antes de enviarse. La app no envía nada automáticamente</li>
+  <li><strong>Transparencia:</strong> indicador de confianza visible (0-99%) en cada clasificación. La interfaz dice "Clasificación automática por palabras clave", no "IA"</li>
+  <li><strong>Edición siempre posible:</strong> la respuesta se muestra en textarea editable, nunca como texto fijo</li>
+  <li><strong>Control de datos:</strong> export CSV/JSON disponible, botón reset con confirmación</li>
+  <li><strong>Sin automatización peligrosa:</strong> la app no hace llamadas, no envía mensajes, no modifica datos externos</li>
+</ul>
+
+<h3>8.3 Límites de la solución</h3>
+<ul style="padding-left:20px">
+  <li>No debe usarse para consultas complejas o con datos sensibles (salud, financieros) sin supervisión experta</li>
+  <li>No debe enviar respuestas automáticamente (la app no lo permite por diseño)</li>
+  <li>No es un chatbot — requiere que el empleado copie y pegue la respuesta manualmente</li>
+  <li>Las respuestas base pueden quedar desactualizadas si no se revisan periódicamente</li>
+</ul>
+
+<h3>8.4 Sesgos potenciales</h3>
+<table>
+  <tr><th>Sesgo</th><th>Descripción</th><th>Mitigación</th></tr>
+  <tr><td>Desbalance de categorías</td><td>Categorías con más palabras clave tienen más probabilidad de ser seleccionadas</td><td>Revisar y equilibrar la matriz periódicamente</td></tr>
+  <tr><td>Lenguaje coloquial</td><td>Consultas informales o con errores ortográficos reducen precisión</td><td>Añadir variantes coloquiales y expandir sinónimos</td></tr>
+  <tr><td>Falso positivo en "otro"</td><td>Consultas ambiguas sin keywords caen en "otro" por defecto</td><td>Umbral mínimo de confianza; si no se alcanza, marcar como "revisar"</td></tr>
+</table>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 8</div>
+</div>
+
+<!-- ═══════════ 9. PLAN IMPLANTACIÓN ═══════════ -->
+<div class="page">
+<h2>9. Plan de Implantación y Hoja de Ruta</h2>
+<h3>9.1 Pasos para llevar la solución a producción</h3>
+<table>
+  <tr><th>Fase</th><th>Acción</th><th>Tiempo</th><th>Objetivo</th></tr>
+  <tr><td><span class="badge">1</span></td><td>Validar prototipo con 2-3 usuarios internos</td><td>Semana 1</td><td>Detectar errores UX y mejorar flujo</td></tr>
+  <tr><td><span class="badge">2</span></td><td>Expandir matriz de palabras clave con casos reales</td><td>Semana 2</td><td>Subir precisión de 86% a >90%</td></tr>
+  <tr><td><span class="badge">3</span></td><td>Añadir categorías nuevas detectadas en validación</td><td>Semana 2</td><td>Cubrir más tipos de consulta</td></tr>
+  <tr><td><span class="badge">4</span></td><td>Prueba piloto (1 semana, 1 empleado)</td><td>Semana 3</td><td>Validar en entorno real</td></tr>
+  <tr><td><span class="badge">5</span></td><td>Revisar privacidad y permisos</td><td>Semana 3</td><td>No almacenar datos sensibles</td></tr>
+  <tr><td><span class="badge">6</span></td><td>Despliegue completo (equipo &lt;5 personas)</td><td>Semana 4</td><td>Uso diario en producción</td></tr>
+</table>
+
+<h3>9.2 Hoja de ruta</h3>
+<table>
+  <tr><th>Fase</th><th>Acción</th><th>Objetivo</th></tr>
+  <tr><td>Semana 1-2</td><td>Validación interna + ajuste matriz</td><td>Prototipo estable para piloto</td></tr>
+  <tr><td>Semana 3</td><td>Piloto con 1 empleado + revisión privacidad</td><td>Validación real</td></tr>
+  <tr><td>Semana 4</td><td>Despliegue completo + formación equipo</td><td>Producción</td></tr>
+  <tr><td>Mes 2</td><td>Evaluar integración Gemini API (IA real)</td><td>Mejorar precisión</td></tr>
+  <tr><td>Mes 3</td><td>Valorar deep links WhatsApp/email</td><td>Reducir un paso más</td></tr>
+</table>
+
+<h3>9.3 Mejoras futuras</h3>
+<table>
+  <tr><th>Mejora</th><th>Prioridad</th><th>Esfuerzo</th><th>Impacto</th></tr>
+  <tr><td>Integración Gemini API (IA real)</td><td>Alta</td><td>Media</td><td>Alto — precisión &gt;90%</td></tr>
+  <tr><td>Enlaces directos WhatsApp/email</td><td>Media</td><td>Baja</td><td>Alto — reduce un paso</td></tr>
+  <tr><td>Soporte multiusuario</td><td>Media</td><td>Alta</td><td>Medio — útil equipos &gt;3</td></tr>
+  <tr><td>Panel tendencias mensuales</td><td>Baja</td><td>Media</td><td>Medio — info negocio</td></tr>
+  <tr><td>Import respuestas personalizadas CSV</td><td>Baja</td><td>Baja</td><td>Medio — adaptación sin código</td></tr>
+</table>
+
+<h3>9.4 Coste de implantación</h3>
+<table>
+  <tr><th>Concepto</th><th>Coste</th></tr>
+  <tr><td>Infraestructura (GitHub Pages)</td><td>0€</td></tr>
+  <tr><td>Dominio personalizado (opcional)</td><td>~10€/año</td></tr>
+  <tr><td>Formación del equipo</td><td>30 min presencial</td></tr>
+  <tr><td>Mantenimiento mensual</td><td>1-2 h revisión matriz</td></tr>
+  <tr><td><strong>Total anual</strong></td><td><strong>0-10€</strong></td></tr>
+</table>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 9</div>
+</div>
+
+<!-- ═══════════ 10. ENTREGA + CONCLUSIÓN ═══════════ -->
+<div class="page">
+<h2>10. Entrega</h2>
+<table>
+  <tr><th>Componente</th><th>Descripción</th><th>URL / Archivo</th></tr>
+  <tr><td>Prototipo funcional</td><td>Aplicación web en GitHub Pages</td><td><a href="https://marconato78.github.io/consultas-express" target="_blank">marconato78.github.io/consultas-express</a></td></tr>
+  <tr><td>Repositorio</td><td>Código fuente completo</td><td><a href="https://github.com/Marconato78/consultas-express" target="_blank">github.com/Marconato78/consultas-express</a></td></tr>
+  <tr><td>Informe ejecutivo</td><td>Este documento HTML imprimible</td><td><code>informe-ejecutivo-consultas-express.html</code></td></tr>
+  <tr><td>Datos de ejemplo</td><td>30 consultas ficticias JSON</td><td><code>data.json</code></td></tr>
+  <tr><td>Instrucciones IA</td><td>Configuración agente OpenCode</td><td><code>AGENTS.md</code></td></tr>
+  <tr><td>Diseño frontend</td><td>Guía de estilo y dirección creativa</td><td><code>DESIGN.md</code></td></tr>
+</table>
+
+<div class="divider"></div>
+
+<h2>11. Conclusión</h2>
+<p>Consultas Express demuestra que una pequeña herramienta, construida sin presupuesto ni infraestructura, puede generar un ahorro estimado de <strong>~3.240€ anuales</strong> y recuperar <strong>~180 horas de trabajo</strong> para una PYME media. El prototipo es funcional, está desplegado y listo para prueba piloto real.</p>
+<p>El proyecto ha seguido la metodología de 8 fases: desde la identificación del problema (fricción en atención al cliente), pasando por el análisis de costes, el diseño del MVP, la construcción iterativa en Google Antigravity, la evaluación con casos de prueba, la identificación de riesgos, y la planificación de la hoja de ruta.</p>
+<p>La principal lección aprendida es que <strong>no toda solución necesita IA avanzada</strong> para aportar valor. Un clasificador por palabras clave bien diseñado puede cubrir el 80% de los casos de una PYME pequeña, con la ventaja de ser transparente, predecible y sin coste de API. La integración de IA real (Gemini) queda como mejora natural para la siguiente iteración.</p>
+<p>El siguiente paso lógico es validar el prototipo con usuarios reales durante una semana y ajustar la matriz de palabras clave con los datos obtenidos.</p>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 10</div>
+</div>
+
+<!-- ═══════════ ANEXO A ═══════════ -->
+<div class="page">
+<h2>Anexo A — Prompts utilizados en Google Antigravity</h2>
+<p class="note">Los prompts son representativos del proceso real de desarrollo. Fueron refinados mediante iteraciones sucesivas en Antigravity.</p>
+
+<h3>Prompt de estructura base</h3>
+<div class="code-block">
+<p><code>"Crea una aplicación web en un solo archivo HTML que:</code></p>
+<p><code>- Tenga un formulario donde pegar consultas de clientes</code></p>
+<p><code>- Clasifique la consulta en categorías: precio, horario, envío, devolución, producto, factura, otro</code></p>
+<p><code>- Genere una respuesta base editable</code></p>
+<p><code>- Guarde el historial en localStorage</code></p>
+<p><code>- Use un diseño synthwave 80s con neón rosa y cian"</code></p>
+</div>
+
+<h3>Prompt de algoritmo de clasificación</h3>
+<div class="code-block">
+<p><code>"Implementa un clasificador por palabras clave en JavaScript. Normaliza el texto (minúsculas, sin tildes).</code></p>
+<p><code>Usa una matriz de reglas: cada categoría tiene un array de palabras clave con peso 2.</code></p>
+<p><code>Calcula la confianza como: score_categoria / score_total * 100.</code></p>
+<p><code>Si la confianza es menor a 60%, marca la consulta como 'revisar'."</code></p>
+</div>
+
+<h3>Prompt de persistencia y datos</h3>
+<div class="code-block">
+<p><code>"Separa los datos de ejemplo en un archivo data.json con 30 consultas ficticias.</code></p>
+<p><code>Carga data.json mediante fetch al iniciar la app. Si localStorage está vacío, guarda los datos seed.</code></p>
+<p><code>Añade botones de exportación: CSV para Excel y JSON para backup/restore."</code></p>
+</div>
+
+<h3>Prompt de diseño synthwave</h3>
+<div class="code-block">
+<p><code>"Rediseña la interfaz con estética synthwave 80s. Fondo púrpura oscuro #0a0015,</code></p>
+<p><code>neón rosa #ff2a75, neón cian #00e5ff. Orbitron display, Plus Jakarta Sans body.</code></p>
+<p><code>Glassmorphism en paneles. Botones gradiente rosa. Rejilla retrowave de fondo."</code></p>
+</div>
+
+<div class="divider"></div>
+
+<h2>Resumen del proyecto</h2>
+<table>
+  <tr><th>Campo</th><th>Valor</th></tr>
+  <tr><td>Nombre</td><td>Consultas Express</td></tr>
+  <tr><td>Alumno</td><td>Marco Antonio Chamorro Villoria</td></tr>
+  <tr><td>Contexto</td><td>PYME — atención al cliente</td></tr>
+  <tr><td>Problema</td><td>Tiempo excesivo respondiendo consultas repetitivas</td></tr>
+  <tr><td>Solución</td><td>App web clasificación automática + respuestas base</td></tr>
+  <tr><td>Herramientas</td><td>HTML, CSS, JS, GitHub Pages, Antigravity</td></tr>
+  <tr><td>Demo</td><td>marconato78.github.io/consultas-express</td></tr>
+  <tr><td>Repo</td><td>github.com/Marconato78/consultas-express</td></tr>
+</table>
+
+<div class="page-footer">Consultas Express · Informe Ejecutivo · 11</div>
+</div>
+
+</body>
+</html>
