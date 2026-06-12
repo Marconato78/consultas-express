@@ -212,7 +212,7 @@ tr:nth-child(even){background:#fafafa}
 <p><strong>Ciclo 1 — Estructura base:</strong> Prompt solicitando una aplicación web SPA para clasificar consultas. Antigravity generó la estructura HTML con formulario, botón de envío y zona de resultados. Diseño inicial genérico (tema claro).</p>
 <p><strong>Ciclo 2 — Clasificador:</strong> Se solicitó explícitamente un sistema sin API externa, usando matriz de palabras clave con scoring. Antigravity generó el algoritmo de normalización, la matriz de 7 categorías y el cálculo de confianza. Se probó con 5 ejemplos y se ajustaron pesos para evitar falsos positivos.</p>
 <p><strong>Ciclo 3 — Diseño synthwave:</strong> Rediseño completo de la interfaz: fondo oscuro, neón rosa/cian, Orbitron, glassmorphism, rejilla retrowave. Antigravity generó el CSS con variables, animaciones y efectos glow.</p>
-<p><strong>Ciclo 4 — Persistencia y pulido:</strong> localStorage, data.json, export CSV/JSON, vista estadísticas, modal detalle, filtros de historial, búsqueda en vivo.</p>
+<p><strong>Ciclo 4 — Persistencia y pulido:</strong> localStorage, data.json, export JSON, vista estadísticas, modal detalle, filtros de historial, búsqueda en vivo.</p>
 
 <div class="page-footer">Consultas Express · Informe Ejecutivo · 4</div>
 </div>
@@ -239,7 +239,7 @@ tr:nth-child(even){background:#fafafa}
 
 <div class="code-block">
 <p><strong>Prompt 4 — Persistencia:</strong></p>
-<p><code>"Añade persistencia con localStorage. Carga 30 consultas de ejemplo desde data.json al iniciar. Añade historial con búsqueda, filtros por estado y exportación CSV/JSON."</code></p>
+<p><code>"Añade persistencia con localStorage. Carga 30 consultas de ejemplo desde data.json al iniciar. Añade historial con búsqueda, filtros por estado y exportación JSON."</code></p>
 </div>
 
 <h3>5.3 Inspiración y referencias</h3>
@@ -271,7 +271,7 @@ tr:nth-child(even){background:#fafafa}
 <table>
   <tr><th>Vista</th><th>Funcionalidad</th></tr>
   <tr><td><strong>Nueva consulta</strong></td><td>Formulario texto + clasificación automática + respuesta editable + acciones (usar, reclasificar, descartar)</td></tr>
-  <tr><td><strong>Historial</strong></td><td>Listado completo con búsqueda en vivo, filtros por estado y exportación CSV/JSON</td></tr>
+  <tr><td><strong>Historial</strong></td><td>Listado completo con búsqueda en vivo, filtros por estado y exportación JSON</td></tr>
   <tr><td><strong>Estadísticas</strong></td><td>Métricas clave + distribución por categoría + evolución diaria 7 días</td></tr>
 </table>
 
@@ -303,7 +303,6 @@ tr:nth-child(even){background:#fafafa}
   <tr><th>Componente</th><th>Rol</th></tr>
   <tr><td><code>data.json</code></td><td>Seed 30 consultas ficticias (fetch al iniciar si localStorage vacío)</td></tr>
   <tr><td>localStorage</td><td>Persistencia de todas las consultas (seed + nuevas)</td></tr>
-  <tr><td>Export CSV</td><td>Descarga datos en formato tabular para Excel</td></tr>
   <tr><td>Export JSON</td><td>Backup completo para restauración futura</td></tr>
 </table>
 
@@ -361,7 +360,7 @@ tr:nth-child(even){background:#fafafa}
   <tr><td>Respuesta incorrecta</td><td><span class="medium">Media</span></td><td>Alto</td><td><strong>Supervisión humana obligatoria.</strong> La respuesta nunca se envía automáticamente. El empleado revisa y edita antes de usar</td></tr>
   <tr><td>Categorización errónea</td><td><span class="medium">Media</span></td><td>Medio</td><td>Indicador de confianza visible + botón "Reclasificar"</td></tr>
   <tr><td>Fuga datos clientes</td><td><span class="low">Baja</span></td><td>Alto</td><td><strong>Sin backend ni servidor.</strong> Datos solo en localStorage del navegador. No se transmiten a terceros</td></tr>
-  <tr><td>Pérdida datos (caché)</td><td><span class="high">Alta</span></td><td>Medio</td><td>Export CSV/JSON disponible. Dato no crítico (solo histórico)</td></tr>
+  <tr><td>Pérdida datos (caché)</td><td><span class="high">Alta</span></td><td>Medio</td><td>Export JSON disponible. Dato no crítico (solo histórico)</td></tr>
   <tr><td>Fallo técnico (JS)</td><td><span class="low">Baja</span></td><td>Alto</td><td>Herramienta de apoyo. Sin ella el proceso manual sigue funcionando</td></tr>
   <tr><td>Dependencia navegador</td><td><span class="medium">Media</span></td><td>Bajo</td><td>Compatible Chrome, Firefox, Edge, Safari actuales (APIs estándar)</td></tr>
 </table>
@@ -371,7 +370,7 @@ tr:nth-child(even){background:#fafafa}
   <li><strong>Supervisión humana obligatoria:</strong> toda respuesta debe ser revisada antes de enviarse. La app no envía nada automáticamente</li>
   <li><strong>Transparencia:</strong> indicador de confianza visible (0-99%) en cada clasificación. La interfaz dice "Clasificación automática por palabras clave", no "IA"</li>
   <li><strong>Edición siempre posible:</strong> la respuesta se muestra en textarea editable, nunca como texto fijo</li>
-  <li><strong>Control de datos:</strong> export CSV/JSON disponible, botón reset con confirmación</li>
+  <li><strong>Control de datos:</strong> export JSON disponible, botón reset con confirmación</li>
   <li><strong>Sin automatización peligrosa:</strong> la app no hace llamadas, no envía mensajes, no modifica datos externos</li>
 </ul>
 
@@ -425,7 +424,6 @@ tr:nth-child(even){background:#fafafa}
   <tr><td>Enlaces directos WhatsApp/email</td><td>Media</td><td>Baja</td><td>Alto — reduce un paso</td></tr>
   <tr><td>Soporte multiusuario</td><td>Media</td><td>Alta</td><td>Medio — útil equipos &gt;3</td></tr>
   <tr><td>Panel tendencias mensuales</td><td>Baja</td><td>Media</td><td>Medio — info negocio</td></tr>
-  <tr><td>Import respuestas personalizadas CSV</td><td>Baja</td><td>Baja</td><td>Medio — adaptación sin código</td></tr>
 </table>
 
 <h3>9.4 Coste de implantación</h3>
@@ -492,7 +490,7 @@ tr:nth-child(even){background:#fafafa}
 <div class="code-block">
 <p><code>"Separa los datos de ejemplo en un archivo data.json con 30 consultas ficticias.</code></p>
 <p><code>Carga data.json mediante fetch al iniciar la app. Si localStorage está vacío, guarda los datos seed.</code></p>
-<p><code>Añade botones de exportación: CSV para Excel y JSON para backup/restore."</code></p>
+<p><code>Añade botones de exportación: JSON para backup/restore."</code></p>
 </div>
 
 <h3>Prompt de diseño synthwave</h3>
